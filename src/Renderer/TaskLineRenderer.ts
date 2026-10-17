@@ -14,6 +14,7 @@ import { DateMenu } from '../ui/Menus/DateMenu';
 import { promptForDate } from '../ui/Menus/DatePicker';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver, showMenu } from '../ui/Menus/TaskEditingMenu';
+import { addPriorityMenuListeners } from './PriorityMenuTargets';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
 
 /**
@@ -255,6 +256,9 @@ export class TaskLineRenderer {
                         `Click to edit ${splitDateText(componentDateField)}, Right-click for more options`,
                     );
                 }
+
+                // t7: click or right-click the priority, or the placeholder after the description, to change it
+                addPriorityMenuListeners(span, component, task, this.taskLayoutOptions);
             }
         }
 
