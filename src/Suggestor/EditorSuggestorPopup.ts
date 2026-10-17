@@ -5,6 +5,7 @@ import { ensureTaskHasId } from '../Task/TaskDependency';
 import { replaceTaskWithTasks } from '../Obsidian/File';
 import { type Settings, getUserSelectedTaskFormat } from '../Config/Settings';
 import { canSuggestForLine } from './Suggestor';
+import { shouldStepAsideForSlashSnippets } from './SlashSnippetsStepAside';
 import type { SuggestInfo } from '.';
 
 export type SuggestInfoWithContext = SuggestInfo & {
@@ -57,6 +58,9 @@ export class EditorSuggestor extends EditorSuggest<SuggestInfoWithContext> {
         if (!canSuggestForLine(line, cursor, editor)) {
             return null;
         }
+
+        // t7 fork: let the Slash snippets plugin show its popup while a snippet name is typed
+        if (shouldStepAsideForSlashSnippets(this.app, line, cursor.ch)) return null;
 
         if (this.grabSuggestions(editor, _file, line).length === 0) return null;
 
