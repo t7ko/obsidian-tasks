@@ -7,3 +7,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | Spec | What it does |
 | --- | --- |
 | [Let Slash snippets work on task lines](slash-snippets-step-aside.md) | Tasks' auto-suggest steps aside while a Slash snippets name is typed on a task line |
+| [Multi-step tasks](multi-step-tasks.md) | A task lists steps after 🪜; checking it off finishes only the current step |

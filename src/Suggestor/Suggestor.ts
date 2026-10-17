@@ -17,6 +17,7 @@ import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { searchForCandidateTasksForDependency } from '../ui/DependencyHelpers';
 import { escapeRegExp } from '../lib/RegExpTools';
 import { StatusType } from '../Statuses/StatusConfiguration';
+import { addMultiStepSuggestion } from './MultiStepSuggestion';
 import type { SuggestInfo, SuggestionBuilder } from '.';
 
 /**
@@ -154,6 +155,7 @@ function addTaskPropertySuggestions(
     }
 
     addField(genericSuggestions, line, symbols.onCompletionSymbol, 'on completion');
+    addMultiStepSuggestion(genericSuggestions, line, parameters.dataviewMode); // t7: multi-step tasks
 
     const matchingSuggestions = filterGeneralSuggestionsForWordAtCursor(genericSuggestions, parameters);
 

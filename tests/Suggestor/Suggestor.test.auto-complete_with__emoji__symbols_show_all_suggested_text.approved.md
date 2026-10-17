@@ -14,6 +14,7 @@
 | 🆔 id | 🆔  |
 | ⛔ depends on id | ⛔  |
 | 🏁 on completion | 🏁  |
+| 🪜 steps | 🪜  |
 | every | 🔁 every  |
 | every day | 🔁 every day  |
 | every week | 🔁 every week  |

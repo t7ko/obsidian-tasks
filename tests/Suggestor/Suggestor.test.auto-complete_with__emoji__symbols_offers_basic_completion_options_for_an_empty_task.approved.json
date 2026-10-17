@@ -56,5 +56,9 @@
   {
     "displayText": "🏁 on completion",
     "appendText": "🏁 "
+  },
+  {
+    "displayText": "🪜 steps",
+    "appendText": "🪜 "
   }
 ]

@@ -17,6 +17,7 @@ import type { TaskLocation } from './TaskLocation';
 import type { Priority } from './Priority';
 import { TaskRegularExpressions } from './TaskRegularExpressions';
 import { OnCompletion, handleOnCompletion } from './OnCompletion';
+import { resetSteps, toggleStep } from './MultiStepTask';
 
 /**
  * Storage for the task line, broken down in to sections.
@@ -356,7 +357,10 @@ export class Task extends ListItem {
 
         const newStatus = StatusRegistry.getInstance().getNextStatusOrCreate(this.status);
 
-        const newTasks = this.handleNewStatus(newStatus);
+        // t7: a multi-step task advances one step per toggle (fork-features/multi-step-tasks.md)
+        const step = toggleStep(this.description, this.status.isCompleted(), newStatus.isCompleted());
+        const task = step ? new Task({ ...this, description: step.description }) : this;
+        const newTasks = step?.keepStatus ? [task] : task.handleNewStatus(newStatus);
         logEndOfTaskEdit(logger, codeLocation, newTasks);
         return newTasks;
     }
@@ -475,6 +479,8 @@ export class Task extends ListItem {
             ...this,
             ...nextOccurrence,
             status: nextStatus,
+            // t7: a new occurrence of a multi-step task starts again at step 1
+            description: resetSteps(this.description),
             // New occurrences cannot have the same block link.
             // And random block links don't help.
             blockLink: '',
