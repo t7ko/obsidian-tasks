@@ -28,6 +28,7 @@ export class QueryLayout {
             [this.queryLayoutOptions.hideBacklinks, 'backlinks'],
             [this.queryLayoutOptions.hideEditButton, 'edit-button'],
             [this.queryLayoutOptions.hidePostponeButton, 'postpone-button'],
+            [this.queryLayoutOptions.hideHorizon, 'horizon'], // t7: horizon
         ];
         for (const [hide, component] of componentsToGenerateClassesOnly) {
             generateHiddenClassForTaskList(hiddenClasses, hide, component);

@@ -9,3 +9,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Let Slash snippets work on task lines](slash-snippets-step-aside.md) | Tasks' auto-suggest steps aside while a Slash snippets name is typed on a task line |
 | [Multi-step tasks](multi-step-tasks.md) | A task lists steps after 🪜; checking it off finishes only the current step |
 | [Priority menu](priority-menu.md) | Click or right-click a task's priority, or a placeholder when it has none, to change it from a menu |
+| [Horizon](horizon.md) | A task's 🔭 horizon (today ... next month): filter, sort and group by it in order of meaning, change it from a menu |

@@ -1,0 +1,19 @@
+import type { Task } from '../../Task/Task';
+import { allHorizonInstructions } from '../EditInstructions/HorizonInstructions';
+import { TaskEditingMenu, type TaskSaver, defaultTaskSaver } from './TaskEditingMenu';
+
+/**
+ * t7 fork feature: a Menu for setting a Task's horizon. Spec: `fork-features/horizon.md`.
+ */
+export class HorizonMenu extends TaskEditingMenu {
+    /**
+     * Constructor, which sets up the menu items.
+     * @param task - the Task to be edited.
+     * @param taskSaver - an optional {@link TaskSaver} function. For details, see {@link TaskEditingMenu}.
+     */
+    constructor(task: Task, taskSaver: TaskSaver = defaultTaskSaver) {
+        super(taskSaver);
+
+        this.addItemsForInstructions(allHorizonInstructions(), task);
+    }
+}

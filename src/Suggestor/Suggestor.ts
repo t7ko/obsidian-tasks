@@ -17,6 +17,7 @@ import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { searchForCandidateTasksForDependency } from '../ui/DependencyHelpers';
 import { escapeRegExp } from '../lib/RegExpTools';
 import { StatusType } from '../Statuses/StatusConfiguration';
+import { horizonSuggestions } from './HorizonSuggestion';
 import { addMultiStepSuggestion } from './MultiStepSuggestion';
 import type { SuggestInfo, SuggestionBuilder } from '.';
 
@@ -89,6 +90,9 @@ export function makeDefaultSuggestionBuilder(
         suggestions = suggestions.concat(
             addOnCompletionOptionSuggestions(symbols.onCompletionSymbol, maxGenericSuggestions, parameters),
         );
+
+        // t7: horizon suggestions ('🔭 horizon', then its values)
+        suggestions = suggestions.concat(horizonSuggestions(line, cursorPos, dataviewMode));
 
         // add task property suggestions ('due', 'recurrence' etc)
         suggestions = suggestions.concat(addTaskPropertySuggestions(symbols, canSaveEdits, parameters));

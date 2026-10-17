@@ -17,6 +17,7 @@ describe('parsing query show/hide layout options', () => {
         ['toolbar', 'hideToolbar', false],
         ['tree', 'hideTree', true],
         ['urgency', 'hideUrgency', true],
+        ['horizon', 'hideHorizon', false], // t7: horizon
     ];
 
     it('should have tests for all show/hide instructions', () => {

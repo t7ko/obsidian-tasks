@@ -15,6 +15,7 @@ export class QueryLayoutOptions {
     hideTree: boolean = true;
     shortMode: boolean = false;
     explainQuery: boolean = false;
+    hideHorizon: boolean = false; // t7: horizon
 }
 
 /**
@@ -37,6 +38,7 @@ export function parseQueryShowHideOptions(queryLayoutOptions: QueryLayoutOptions
         ['toolbar', 'hideToolbar'],
         ['tree', 'hideTree'],
         ['urgency', 'hideUrgency'],
+        ['horizon', 'hideHorizon'], // t7: horizon
     ]);
 
     for (const [key, property] of optionMap.entries()) {
