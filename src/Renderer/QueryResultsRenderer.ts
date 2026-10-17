@@ -9,6 +9,7 @@ import { getQueryForQueryRenderer } from '../Query/QueryRendererHelper';
 import type { QueryResult } from '../Query/QueryResult';
 import type { TasksFile } from '../Scripting/TasksFile';
 import type { Task } from '../Task/Task';
+import { addFilterClearButton } from './FilterClearButton';
 import { HtmlColumnQueryResultsRenderer } from './HtmlColumnQueryResultsRenderer';
 import { type HTMLQueryRendererParameters, HtmlQueryResultsRenderer } from './HtmlQueryResultsRenderer';
 import { MarkdownQueryResultsRenderer } from './MarkdownQueryResultsRenderer';
@@ -211,6 +212,9 @@ export class QueryResultsRenderer {
             await this.applySearchBoxFilterAndRerender(filterString, content);
         };
         searchBox.addEventListener('input', debounce(doSearch, 500, true));
+
+        // t7: a clear button at the box's right end. Spec: fork-features/filter-clear-button.md
+        addFilterClearButton(label, searchBox, () => this.applySearchBoxFilterAndRerender('', content));
     }
 
     public async applySearchBoxFilterAndRerender(filterString: string, content: HTMLDivElement) {
