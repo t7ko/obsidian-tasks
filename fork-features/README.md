@@ -11,3 +11,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Priority menu](priority-menu.md) | Click or right-click a task's priority, or a placeholder when it has none, to change it from a menu |
 | [Horizon](horizon.md) | A task's 🔭 horizon (today ... next month): filter, sort and group by it in order of meaning, change it from a menu |
 | [Filter clear button](filter-clear-button.md) | A round × at the right end of a query's filter box, or Escape in it, empties it |
+| [Horizon history](horizon-history.md) | A daily history of the tasks with a horizon, or of all open tasks: each planned task gets a planned date and shows a badge when late; `planned`, `opened`, `is late` and `group by lateness` serve weekly reviews |

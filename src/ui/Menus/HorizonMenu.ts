@@ -1,3 +1,4 @@
+import { addHorizonHistoryItems } from '../../HorizonHistory/HorizonHistoryMenuItems';
 import type { Task } from '../../Task/Task';
 import { allHorizonInstructions } from '../EditInstructions/HorizonInstructions';
 import { TaskEditingMenu, type TaskSaver, defaultTaskSaver } from './TaskEditingMenu';
@@ -15,5 +16,7 @@ export class HorizonMenu extends TaskEditingMenu {
         super(taskSaver);
 
         this.addItemsForInstructions(allHorizonInstructions(), task);
+        // t7: horizon history. The task's planned date, lateness and pushes, and Reset lateness.
+        addHorizonHistoryItems(this, task);
     }
 }

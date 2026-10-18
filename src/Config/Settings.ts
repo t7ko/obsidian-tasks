@@ -17,6 +17,7 @@ import { DebugSettings } from './DebugSettings';
 import { type EditModalShowSettings, defaultEditModalShowSettings } from './EditModalShowSettings';
 import { StatusSettings } from './StatusSettings';
 import type { DismissedNotices } from './DismissibleNotices';
+import { type ForkSettings, defaultForkSettings } from './ForkSettings';
 
 /**
  * Interface encapsulating how a Task is written to and read from text
@@ -118,6 +119,9 @@ export interface Settings {
     debugSettings: DebugSettings;
 
     loggingOptions: LogOptions;
+
+    // t7 fork features
+    t7: ForkSettings;
 }
 
 const defaultSettings: Readonly<Settings> = {
@@ -176,6 +180,9 @@ const defaultSettings: Readonly<Settings> = {
             'tasks.Task': 'info', // Task.ts
         },
     },
+
+    // t7 fork features
+    t7: defaultForkSettings(),
 };
 
 let settings: Settings = { ...defaultSettings };

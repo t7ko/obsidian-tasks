@@ -21,6 +21,7 @@ import type { StatusCollection } from '../Statuses/StatusCollection';
 import { createStatusRegistryReport } from '../Statuses/StatusRegistryReport';
 import { i18n } from '../i18n/i18n';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
+import { horizonHistorySettingsGroup } from '../HorizonHistory/HorizonHistorySettingsGroup';
 import * as Themes from './Themes';
 import {
     POSTPONE_DATE_FIELD_VALUES,
@@ -212,6 +213,7 @@ export class SettingsTab extends PluginSettingTab {
             this.datesFromFilenamesGroup(),
             this.recurringTasksGroup(),
             this.taskEntryGroup(),
+            horizonHistorySettingsGroup(this.plugin, this.events), // t7: horizon history
         ];
     }
 

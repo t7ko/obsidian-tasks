@@ -1,0 +1,36 @@
+/* t7 fork feature: horizon history. Spec: fork-features/horizon-history.md */
+
+/* A late task's badge, right after its horizon. HorizonMenuTargets.ts opens the horizon menu for it. */
+.task-horizon-late {
+    margin-inline: 0.3em;
+    padding: 0 0.4em;
+    border-radius: var(--radius-s, 4px);
+    font-size: var(--font-smaller, 0.875em);
+    white-space: nowrap;
+    cursor: pointer;
+
+    &[data-task-lateness='low'] {
+        color: var(--color-yellow);
+        background-color: rgba(var(--color-yellow-rgb), 0.15);
+    }
+
+    &[data-task-lateness='medium'] {
+        color: var(--color-orange);
+        background-color: rgba(var(--color-orange-rgb), 0.15);
+    }
+
+    &[data-task-lateness='high'] {
+        color: var(--color-red);
+        background-color: rgba(var(--color-red-rgb), 0.15);
+    }
+}
+
+/* No horizon placeholder where the settings turn it off. HorizonMenuTargets.ts adds the class. */
+li.plugin-tasks-list-item.task-horizon-placeholder-off:not([data-task-horizon]) > .tasks-list-text::after {
+    content: none;
+}
+
+/* No badge where the query hides horizons */
+.tasks-layout-hide-horizon .task-horizon-late {
+    display: none;
+}

@@ -326,5 +326,36 @@
       }
     ],
     "type": "group"
+  },
+  {
+    "heading": "Horizons",
+    "items": [
+      {
+        "name": "Horizon placeholder",
+        "desc": "Show a faint 🔭 at the end of each task without a horizon, to click for the horizon menu. Turn it off in a vault that doesn't use horizons; horizons and their lateness badges show either way.",
+        "render": "[Function]"
+      },
+      {
+        "name": "Tasks to track",
+        "desc": "Tasks with a horizon get a planned date and can be late. With all open tasks, the history also records when each task without a horizon was first seen.",
+        "render": "[Function]"
+      },
+      {
+        "name": "Yellow badge from",
+        "desc": "Days late from which a late task shows a yellow badge.",
+        "render": "[Function]"
+      },
+      {
+        "name": "Orange badge from",
+        "desc": "Days late from which the badge is orange.",
+        "render": "[Function]"
+      },
+      {
+        "name": "Red badge from",
+        "desc": "Days late from which the badge is red.",
+        "render": "[Function]"
+      }
+    ],
+    "type": "group"
   }
 ]

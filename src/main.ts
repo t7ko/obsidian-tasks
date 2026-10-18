@@ -22,6 +22,7 @@ import { QueryFileDefaults } from './Query/QueryFileDefaults';
 import { LinkResolver } from './Task/LinkResolver';
 import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvider';
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
+import { startHorizonHistory } from './HorizonHistory/startHorizonHistory';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -72,6 +73,9 @@ export default class TasksPlugin extends Plugin {
             workspace: this.app.workspace,
             events,
         });
+
+        // t7: horizon history
+        startHorizonHistory(this, events);
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });

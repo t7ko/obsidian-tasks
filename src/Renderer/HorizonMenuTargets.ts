@@ -1,3 +1,5 @@
+import { horizonPlaceholderShown } from '../HorizonHistory/HorizonPlaceholderSetting';
+import { addLatenessBadge } from '../HorizonHistory/LatenessBadge';
 import { findHorizonToken, horizonAttributeValue, horizonOf } from '../Task/Horizon';
 import type { Task } from '../Task/Task';
 import { HorizonMenu } from '../ui/Menus/HorizonMenu';
@@ -13,7 +15,8 @@ import { type TaskSaver, defaultTaskSaver, showMenu } from '../ui/Menus/TaskEdit
  * A task without a horizon gets a placeholder instead: the `::after` content of the task's text span,
  * drawn by `HorizonMenuTargets.scss`. That span holds only component spans, and events on a pseudo-element
  * are dispatched to the element that owns it, so an event whose target is the text span itself came from
- * the placeholder. The rendered HTML of a task without a horizon stays exactly as upstream's.
+ * the placeholder. The rendered HTML of a task without a horizon stays exactly as upstream's. If the settings turn the
+ * placeholder off (horizon history), the task's `li` gets the class `task-horizon-placeholder-off` instead.
  *
  * Call this once per task, after its components have been rendered into {@link textSpan}.
  *
@@ -34,6 +37,11 @@ export function addHorizonMenuTargets(
     const canSave = task.taskLocation.hasKnownPath;
 
     if (attributeValue === null) {
+        // t7: horizon history. The settings can turn the placeholder off.
+        if (!horizonPlaceholderShown()) {
+            li.classList.add('task-horizon-placeholder-off');
+            return;
+        }
         if (canSave) {
             addListeners(textSpan, task, taskSaver, (ev: MouseEvent) => ev.target === textSpan);
         }
@@ -50,6 +58,12 @@ export function addHorizonMenuTargets(
     horizonSpan.setAttribute('data-task-horizon', attributeValue);
     if (canSave) {
         addListeners(horizonSpan, task, taskSaver, () => true);
+    }
+
+    // t7: horizon history. A late task's badge, which opens the same menu. Spec: `fork-features/horizon-history.md`.
+    const badge = addLatenessBadge(li, horizonSpan, task);
+    if (badge !== null && canSave) {
+        addListeners(badge, task, taskSaver, () => true);
     }
 }
 

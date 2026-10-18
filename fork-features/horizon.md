@@ -75,7 +75,7 @@ A task without a horizon shows a faint grey 🔭 at the end of its line, after a
 ☐ Buy milk #home ⏺️ 📅 2026-10-18 🔭
 ```
 
-It brightens while the pointer is over the task, and a left or right click on it opens the same menu with `No horizon` checked. Like the priority placeholder, it is drawn by the plugin's stylesheet and never written to the note. A chosen horizon is written into the description, so after choosing one the 🔭 moves from the end of the line to just after the description.
+It brightens while the pointer is over the task, and a left or right click on it opens the same menu with `No horizon` checked. Like the priority placeholder, it is drawn by the plugin's stylesheet and never written to the note. A chosen horizon is written into the description, so after choosing one the 🔭 moves from the end of the line to just after the description. In a vault that doesn't use horizons, the setting **Horizon placeholder** turns the placeholder off (see [horizon history](horizon-history.md#settings)).
 
 ### Auto-suggest
 
@@ -113,7 +113,7 @@ li.plugin-tasks-list-item:not([data-task-horizon]) > .tasks-list-text::after {
 7. Tasks whose file is unknown (cards on a canvas) get no menu, since edits there can't be saved. Their horizon is still styled.
 8. No placeholder on tasks whose status type is DONE, CANCELLED or NON_TASK. A real horizon on such a task still opens the menu.
 9. A click or right-click on the rest of the description, its links and tags behaves as upstream. The priority menu's targets keep working.
-10. The rendered HTML of a task without 🔭 is exactly upstream's: the placeholder is CSS `::after` content on the task's text span, `span.tasks-list-text`.
+10. The rendered HTML of a task without 🔭 is exactly upstream's: the placeholder is CSS `::after` content on the task's text span, `span.tasks-list-text`. (With the placeholder turned off in the settings, its `li` gets one class; see horizon history.)
 11. Live Preview and Source mode don't change.
 12. A new occurrence of a recurring task keeps the horizon, as it keeps the rest of the description.
 13. `hide horizon` and `show horizon` are query layout options, like upstream's `hide priority`: they work in the Global Query and in presets, and the last one wins. `hide horizon` gives the query's result lists the class `tasks-layout-hide-horizon`, under which CSS hides `span.task-horizon` and the placeholder; each task's rendered HTML stays the same.

@@ -33,6 +33,9 @@ import { IdField } from './Filter/IdField';
 import { DependsOnField } from './Filter/DependsOnField';
 import { RandomField } from './Filter/RandomField';
 import { HorizonField } from './Filter/HorizonField';
+import { PlannedDateField } from './Filter/PlannedDateField';
+import { LatenessField } from './Filter/LatenessField';
+import { OpenedDateField } from './Filter/OpenedDateField';
 
 // When parsing a query the fields are tested one by one according to this order.
 // Since BooleanField is a meta-field, which needs to aggregate a few fields together, it is intended to
@@ -70,6 +73,9 @@ export const fieldCreators: EndsWith<BooleanField> = [
     () => new BlockingField(),
     () => new RandomField(),
     () => new HorizonField(), // t7: horizon
+    () => new PlannedDateField(), // t7: horizon history
+    () => new LatenessField(), // t7: horizon history
+    () => new OpenedDateField(), // t7: horizon history
     () => new BooleanField(), // --- Please make sure to keep BooleanField last (see comment above) ---
 ];
 
