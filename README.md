@@ -10,6 +10,9 @@ _You can toggle the task status in any view or query and it will update the sour
 
 ---
 
+> [!NOTE]
+> **This is a personal fork of [Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks).** It adds its own features on top of the latest Tasks release. See **[Fork features](fork-features/README.md)** for the list, with a spec for each.
+
 For changes in each release, please check the releases page: <https://github.com/obsidian-tasks-group/obsidian-tasks/releases>
 
 ---
