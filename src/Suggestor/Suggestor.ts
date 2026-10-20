@@ -19,6 +19,7 @@ import { escapeRegExp } from '../lib/RegExpTools';
 import { StatusType } from '../Statuses/StatusConfiguration';
 import { horizonSuggestions } from './HorizonSuggestion';
 import { addMultiStepSuggestion } from './MultiStepSuggestion';
+import { nailSuggestions } from './NailSuggestion';
 import type { SuggestInfo, SuggestionBuilder } from '.';
 
 /**
@@ -93,6 +94,9 @@ export function makeDefaultSuggestionBuilder(
 
         // t7: horizon suggestions ('🔭 horizon', then its values)
         suggestions = suggestions.concat(horizonSuggestions(line, cursorPos, dataviewMode));
+
+        // t7: nail suggestions ('⚠️ add nail', '⚠️ remove nail')
+        suggestions = suggestions.concat(nailSuggestions(line, cursorPos, dataviewMode));
 
         // add task property suggestions ('due', 'recurrence' etc)
         suggestions = suggestions.concat(addTaskPropertySuggestions(symbols, canSaveEdits, parameters));

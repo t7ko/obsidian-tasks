@@ -6,6 +6,7 @@ import { addPriorityMenuListeners } from '../../src/Renderer/PriorityMenuTargets
 import { TaskLineRenderer } from '../../src/Renderer/TaskLineRenderer';
 import { Priority } from '../../src/Task/Priority';
 import type { Task } from '../../src/Task/Task';
+import { NailMenu } from '../../src/ui/Menus/NailMenu';
 import { PriorityMenu } from '../../src/ui/Menus/PriorityMenu';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { TestableTaskSaver, menuToString } from '../ui/Menus/MenuTestingHelpers';
@@ -78,7 +79,9 @@ describe('priority menu on rendered tasks', () => {
               Priority: Medium
               Priority: Normal
               Priority: Low
-              Priority: Lowest"
+              Priority: Lowest
+              ---
+              Add nail"
         `);
     });
 
@@ -96,14 +99,23 @@ describe('priority menu on rendered tasks', () => {
         },
     );
 
-    it.each(['click', 'contextmenu'] as const)('should leave %s on the description text alone', async (type) => {
+    it('should leave a click on the description text alone', async () => {
         const li = await renderTask(withPath().build());
 
-        const event = mouse(type);
+        const event = mouse('click');
         (descriptionSpan(li).firstElementChild as HTMLElement).dispatchEvent(event);
 
         expect(event.defaultPrevented).toEqual(false);
         expect(shownMenus()).toEqual([]);
+    });
+
+    // A right-click elsewhere on the task opens the nail menu (fork-features/nails.md).
+    it('should open the nail menu, not the priority menu, on contextmenu of the description text', async () => {
+        const li = await renderTask(withPath().build());
+
+        (descriptionSpan(li).firstElementChild as HTMLElement).dispatchEvent(mouse('contextmenu'));
+
+        expect(shownMenus().map((menu) => menu.constructor)).toEqual([NailMenu]);
     });
 
     it('should not open the menu from the description of a task with a priority', async () => {
@@ -111,7 +123,7 @@ describe('priority menu on rendered tasks', () => {
 
         descriptionSpan(li).dispatchEvent(mouse('contextmenu'));
 
-        expect(shownMenus()).toEqual([]);
+        expect(shownMenus().map((menu) => menu.constructor)).toEqual([NailMenu]);
     });
 
     it('should not open the menu from the description when the layout hides the priority', async () => {
@@ -121,7 +133,7 @@ describe('priority menu on rendered tasks', () => {
 
         descriptionSpan(li).dispatchEvent(mouse('contextmenu'));
 
-        expect(shownMenus()).toEqual([]);
+        expect(shownMenus().map((menu) => menu.constructor)).toEqual([NailMenu]);
     });
 
     it('should not open the menu for a task without a known path', async () => {

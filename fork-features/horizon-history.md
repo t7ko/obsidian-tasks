@@ -112,7 +112,7 @@ A done or cancelled task's badge says how late it was finished. Hovering over a 
 
 ### Menu
 
-The horizon menu of a tracked task with a planned date ends with:
+The horizon menu of a tracked task with a planned date ends with these lines, followed only by the items of [nails](nails.md):
 
 ```text
   ---

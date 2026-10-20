@@ -253,6 +253,15 @@ describe('rendered tasks', () => {
     });
 });
 
+/**
+ * The lines of a horizon menu, without the nail items at its end (fork-features/nails.md).
+ */
+function linesBeforeNailItems(menu: HorizonMenu): string[] {
+    const lines = menuToString(menu).split('\n');
+    expect(lines.slice(-2)).toEqual(['  ---', '  Add nail']);
+    return lines.slice(0, -2);
+}
+
 describe('horizon menu', () => {
     it('ends with the history of a tracked open task, and Reset lateness', () => {
         const task = taskAt('- [ ] Call Bob 🔭 this week', 'a.md', 3);
@@ -262,7 +271,7 @@ describe('horizon menu', () => {
 
         const menu = new HorizonMenu(task);
 
-        const lines = menuToString(menu).split('\n');
+        const lines = linesBeforeNailItems(menu);
         expect(lines.slice(-5)).toEqual([
             '  No horizon',
             '  ---',
@@ -273,7 +282,7 @@ describe('horizon menu', () => {
         expect(setIsLabel).toHaveBeenCalledTimes(2);
 
         // @ts-expect-error TS2339: Property 'items' does not exist on type 'HorizonMenu'.
-        const resetItem = menu.items[menu.items.length - 1];
+        const resetItem = menu.items[menu.items.length - 3];
         resetItem.callback();
         expect(listener).toHaveBeenCalledTimes(1);
         expect(HorizonHistory.getInstance().daysLate(task)).toEqual(0);
@@ -283,7 +292,7 @@ describe('horizon menu', () => {
         const task = taskAt('- [x] Call Bob 🔭 today ✅ 2026-10-14', 'a.md', 3);
         track(task, { planned: '2026-10-12', status: 'done', closed: '2026-10-14', closedOn: today });
 
-        const lines = menuToString(new HorizonMenu(task)).split('\n');
+        const lines = linesBeforeNailItems(new HorizonMenu(task));
         expect(lines[lines.length - 1]).toMatch(/^ {2}Never pushed · tracked since Mon 12 Oct( 2026)?$/);
         expect(lines).not.toContain('  Reset lateness');
     });
@@ -292,7 +301,7 @@ describe('horizon menu', () => {
         const task = taskAt('- [ ] Buy milk ➕ 2026-03-02', 'a.md', 3);
         track(task, { horizon: 'none', planned: undefined, since: today });
 
-        const lines = menuToString(new HorizonMenu(task)).split('\n');
+        const lines = linesBeforeNailItems(new HorizonMenu(task));
         expect(lines.slice(-3)).toEqual([
             'x No horizon',
             '  ---',
@@ -302,7 +311,7 @@ describe('horizon menu', () => {
 
     it('adds nothing for a task that is not tracked', () => {
         HorizonHistory.getInstance().load(loadedFrom(), today);
-        const lines = menuToString(new HorizonMenu(taskAt('- [ ] Call Bob 🔭 today', 'a.md', 3))).split('\n');
+        const lines = linesBeforeNailItems(new HorizonMenu(taskAt('- [ ] Call Bob 🔭 today', 'a.md', 3)));
         expect(lines[lines.length - 1]).toEqual('  No horizon');
         expect(setIsLabel).not.toHaveBeenCalled();
     });

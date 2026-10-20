@@ -15,6 +15,7 @@ import { promptForDate } from '../ui/Menus/DatePicker';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver, showMenu } from '../ui/Menus/TaskEditingMenu';
 import { addHorizonMenuTargets } from './HorizonMenuTargets';
+import { addNailMenuTargets } from './NailMenuTargets';
 import { addPriorityMenuListeners } from './PriorityMenuTargets';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
 
@@ -156,6 +157,8 @@ export class TaskLineRenderer {
         await this.taskToHtml(task, textSpan, li, isTaskInQueryFile);
         // t7: click or right-click the horizon, or the placeholder at the end of the line, to change it
         addHorizonMenuTargets(li, textSpan, task);
+        // t7: right-click anywhere else on the task to add or remove a nail (⚠️)
+        addNailMenuTargets(li, task);
 
         // NOTE: this area is mentioned in `CONTRIBUTING.md` under "How does Tasks handle status changes". When
         // moving the code, remember to update that reference too.

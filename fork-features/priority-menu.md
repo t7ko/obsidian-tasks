@@ -15,7 +15,7 @@ x Priority: High
   Priority: Lowest
 ```
 
-Choosing an item rewrites the task's line with that priority, as the edit modal would; `Priority: Normal` removes the emoji. Choosing the current priority changes nothing.
+Choosing an item rewrites the task's line with that priority, as the edit modal would; `Priority: Normal` removes the emoji. Choosing the current priority changes nothing. The menu ends with a separator and the items of [nails](nails.md): `Add nail` and, for a task with nails, `Remove nail`.
 
 A task without a priority shows a faint grey ⏺️ where the priority would be, right after the description:
 
@@ -46,7 +46,7 @@ li.plugin-tasks-list-item[data-task-priority='normal'] > .tasks-list-text > .tas
 3. A task with priority Normal (no emoji) shows the placeholder ⏺️ (U+23FA U+FE0F, greyscale, 30% opacity, 70% while its line is hovered) after its description, and it opens the same menu.
 4. No placeholder on tasks whose status type is DONE, CANCELLED or NON_TASK, nor in queries with `hide priority`. With `hide priority`, clicks on the description never open the menu.
 5. The placeholder is the `::after` content of the description's outer span. It is not in the DOM text: selecting and copying a rendered task leaves it out, and the toolbar's "Copy results" is unchanged.
-6. A click or right-click on the description's text, links and tags behaves as upstream.
+6. A click or right-click on the description's text, links and tags behaves as upstream, except that a right-click on the text opens the menu of [nails](nails.md).
 7. Tasks whose file is unknown (cards on a canvas) get no menu, since edits there can't be saved.
 8. The rendered HTML is exactly upstream's: the feature only adds event listeners and CSS.
 9. Live Preview and Source mode don't change: there the task is plain text, and upstream has no field menus there either.

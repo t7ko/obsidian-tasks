@@ -12,3 +12,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Horizon](horizon.md) | A task's 🔭 horizon (today ... next month): filter, sort and group by it in order of meaning, change it from a menu |
 | [Filter clear button](filter-clear-button.md) | A round × at the right end of a query's filter box, or Escape in it, empties it |
 | [Horizon history](horizon-history.md) | A daily history of the tasks with a horizon, or of all open tasks: each planned task gets a planned date and shows a badge when late; `planned`, `opened`, `is late` and `group by lateness` serve weekly reviews |
+| [Nails](nails.md) | Each ⚠️ at the start of a task is a nail, one more request from someone waiting for it: add and remove them from menus, the editor and auto-suggest; filter, sort and group by them |

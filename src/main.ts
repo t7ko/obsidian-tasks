@@ -23,6 +23,7 @@ import { LinkResolver } from './Task/LinkResolver';
 import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvider';
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { startHorizonHistory } from './HorizonHistory/startHorizonHistory';
+import { registerNailCommands } from './Commands/NailCommands';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -76,6 +77,8 @@ export default class TasksPlugin extends Plugin {
 
         // t7: horizon history
         startHorizonHistory(this, events);
+        // t7: nails
+        registerNailCommands(this);
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });

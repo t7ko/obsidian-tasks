@@ -9,6 +9,7 @@ import { TaskLineRenderer } from '../../src/Renderer/TaskLineRenderer';
 import { Priority } from '../../src/Task/Priority';
 import type { Task } from '../../src/Task/Task';
 import { HorizonMenu } from '../../src/ui/Menus/HorizonMenu';
+import { NailMenu } from '../../src/ui/Menus/NailMenu';
 import { PriorityMenu } from '../../src/ui/Menus/PriorityMenu';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { fromLine } from '../TestingTools/TestHelpers';
@@ -125,7 +126,9 @@ describe('horizon menu on rendered tasks', () => {
               This month
               Next month
               ---
-              No horizon"
+              No horizon
+              ---
+              Add nail"
         `);
     });
 
@@ -151,14 +154,22 @@ describe('horizon menu on rendered tasks', () => {
         expect(shownMenus()).toEqual([]);
     });
 
-    it.each(['click', 'contextmenu'] as const)('should leave %s on the description text alone', async (type) => {
+    it('should leave a click on the description text alone', async () => {
         const li = await renderTask(withPath('Buy milk').priority(Priority.High).build());
 
-        const event = mouse(type);
+        const event = mouse('click');
         (li.querySelector('.task-description > span') as HTMLElement).dispatchEvent(event);
 
         expect(event.defaultPrevented).toEqual(false);
         expect(shownMenus()).toEqual([]);
+    });
+
+    it('should open the nail menu, not the horizon menu, on contextmenu of the description text', async () => {
+        const li = await renderTask(withPath('Buy milk').priority(Priority.High).build());
+
+        (li.querySelector('.task-description > span') as HTMLElement).dispatchEvent(mouse('contextmenu'));
+
+        expect(shownMenus().map((menu) => menu.constructor)).toEqual([NailMenu]);
     });
 
     it('should open only the horizon menu, not the priority menu, from the horizon', async () => {

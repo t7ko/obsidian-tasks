@@ -1,12 +1,12 @@
 import { TaskLayoutComponent, type TaskLayoutOptions } from '../Layout/TaskLayoutOptions';
 import { Priority } from '../Task/Priority';
 import type { Task } from '../Task/Task';
-import { PriorityMenu } from '../ui/Menus/PriorityMenu';
+import { PriorityMenuWithNails } from '../ui/Menus/NailMenu';
 import { type TaskSaver, defaultTaskSaver, showMenu } from '../ui/Menus/TaskEditingMenu';
 
 /**
- * t7 fork feature: click or right-click a rendered task's priority to change it with a {@link PriorityMenu}.
- * Spec: `fork-features/priority-menu.md`.
+ * t7 fork feature: click or right-click a rendered task's priority to change it with upstream's `PriorityMenu`,
+ * which ends with the nail items ({@link PriorityMenuWithNails}). Spec: `fork-features/priority-menu.md`.
  *
  * A task without a priority has no priority span, so it gets a placeholder instead: the `::after`
  * content of its description span, drawn by `PriorityMenuTargets.scss`. Events on a pseudo-element
@@ -53,7 +53,8 @@ function addListeners(
 ) {
     const listener = (ev: MouseEvent) => {
         if (isForPriorityMenu(ev)) {
-            showMenu(ev, new PriorityMenu(task, taskSaver));
+            // t7: nails. Spec: `fork-features/nails.md`.
+            showMenu(ev, new PriorityMenuWithNails(task, taskSaver));
         }
     };
     // Note: The more convenient span.onClickEvent() doesn't work here, as it is not available when tests are run.

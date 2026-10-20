@@ -67,7 +67,7 @@ x This week
   No horizon
 ```
 
-Choosing a value replaces the task's horizon in place, or adds `🔭 <value>` at the end of the description, after a space. `No horizon` removes the 🔭 and its value. Choosing the current value changes nothing.
+Choosing a value replaces the task's horizon in place, or adds `🔭 <value>` at the end of the description, after a space. `No horizon` removes the 🔭 and its value. Choosing the current value changes nothing. The menu ends with a separator and the items of [nails](nails.md): `Add nail` and, for a task with nails, `Remove nail`.
 
 A task without a horizon shows a faint grey 🔭 at the end of its line, after all its fields:
 
@@ -112,7 +112,7 @@ li.plugin-tasks-list-item:not([data-task-horizon]) > .tasks-list-text::after {
 6. Menu changes are saved through `replaceTaskWithTasks`, changing only the description.
 7. Tasks whose file is unknown (cards on a canvas) get no menu, since edits there can't be saved. Their horizon is still styled.
 8. No placeholder on tasks whose status type is DONE, CANCELLED or NON_TASK. A real horizon on such a task still opens the menu.
-9. A click or right-click on the rest of the description, its links and tags behaves as upstream. The priority menu's targets keep working.
+9. A click or right-click on the rest of the description, its links and tags behaves as upstream, except that a right-click on the text opens the menu of [nails](nails.md). The priority menu's targets keep working.
 10. The rendered HTML of a task without 🔭 is exactly upstream's: the placeholder is CSS `::after` content on the task's text span, `span.tasks-list-text`. (With the placeholder turned off in the settings, its `li` gets one class; see horizon history.)
 11. Live Preview and Source mode don't change.
 12. A new occurrence of a recurring task keeps the horizon, as it keeps the rest of the description.

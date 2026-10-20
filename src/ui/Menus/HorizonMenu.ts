@@ -1,6 +1,7 @@
 import { addHorizonHistoryItems } from '../../HorizonHistory/HorizonHistoryMenuItems';
 import type { Task } from '../../Task/Task';
 import { allHorizonInstructions } from '../EditInstructions/HorizonInstructions';
+import { nailInstructionsAfterSeparator } from '../EditInstructions/NailInstructions';
 import { TaskEditingMenu, type TaskSaver, defaultTaskSaver } from './TaskEditingMenu';
 
 /**
@@ -18,5 +19,7 @@ export class HorizonMenu extends TaskEditingMenu {
         this.addItemsForInstructions(allHorizonInstructions(), task);
         // t7: horizon history. The task's planned date, lateness and pushes, and Reset lateness.
         addHorizonHistoryItems(this, task);
+        // t7: nails. A separator, `Add nail` and `Remove nail`.
+        this.addItemsForInstructions(nailInstructionsAfterSeparator(task), task);
     }
 }
