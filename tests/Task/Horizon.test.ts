@@ -8,6 +8,7 @@ import {
     horizonRank,
     horizons,
     setHorizon,
+    withoutTrailingHorizon,
 } from '../../src/Task/Horizon';
 
 describe('horizonOf', () => {
@@ -125,13 +126,14 @@ describe('setHorizon', () => {
         ['Buy 🔭 tomorow milk', 'tomorrow', 'Buy 🔭 tomorrow tomorow milk'],
         ['Buy milk 🔭', 'today', 'Buy milk 🔭 today'],
         ['Buy milk 🔭x', 'today', 'Buy milk 🔭 today x'],
-        // Multi-step tasks: before the steps, so not part of the last step
+        // Multi-step tasks: at the end too, after the steps
         [
             'Renew passport 🪜 ~~fill form~~ // get photo',
             'this week',
-            'Renew passport 🔭 this week 🪜 ~~fill form~~ // get photo',
+            'Renew passport 🪜 ~~fill form~~ // get photo 🔭 this week',
         ],
-        ['🪜 one // two', 'today', '🔭 today 🪜 one // two'],
+        ['🪜 one // two', 'today', '🪜 one // two 🔭 today'],
+        ['Pack 🔭 today 🪜 bags // car', 'next week', 'Pack 🔭 next week 🪜 bags // car'],
     ])('"%s" with horizon "%s" becomes "%s"', (description: string, horizon: Horizon, expected: string) => {
         const result = setHorizon(description, horizon);
         expect(result).toEqual(expected);
@@ -149,5 +151,20 @@ describe('setHorizon', () => {
         const result = setHorizon(description, null);
         expect(result).toEqual(expected);
         expect(horizonOf(result)).toEqual('none');
+    });
+});
+
+describe('withoutTrailingHorizon', () => {
+    it.each([
+        ['submit 🔭 this week', 'submit'],
+        ['submit  🔭\uFE0F Next  Month', 'submit'],
+        ['submit🔭 today', 'submit'],
+        ['🔭 today', ''],
+        ['submit 🔭 tomorow', 'submit 🔭 tomorow'],
+        ['submit 🔭 today #home', 'submit 🔭 today #home'],
+        ['🔭 today submit', '🔭 today submit'],
+        ['submit', 'submit'],
+    ])('"%s" becomes "%s"', (text: string, expected: string) => {
+        expect(withoutTrailingHorizon(text)).toEqual(expected);
     });
 });

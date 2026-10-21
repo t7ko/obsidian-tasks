@@ -1,5 +1,3 @@
-import { MULTI_STEP_MARKER } from './MultiStepTask';
-
 /**
  * t7 fork feature: horizon. Spec: `fork-features/horizon.md`.
  *
@@ -29,8 +27,14 @@ export type HorizonState = Horizon | 'invalid' | 'none';
 
 const VARIATION_SELECTOR = '\uFE0F';
 
+// The six values, with any whitespace between their two words.
+const VALUE = /(today|tomorrow|(?:this|next)\s+(?:week|month))/;
+
 // Applied to the text after the marker. The value must end at whitespace or the end of the description.
-const VALUE_AFTER_MARKER = /^\s+(today|tomorrow|(?:this|next)\s+(?:week|month))(?=\s|$)/i;
+const VALUE_AFTER_MARKER = new RegExp(`^\\s+${VALUE.source}(?=\\s|$)`, 'i');
+
+// A valid horizon at the end of a text, with the whitespace before it. No 'u' flag: the marker is two code units.
+const HORIZON_AT_END = new RegExp(`\\s*${HORIZON_MARKER}${VARIATION_SELECTOR}?\\s+${VALUE.source}$`, 'i');
 
 export interface HorizonToken {
     state: Horizon | 'invalid';
@@ -61,6 +65,16 @@ export function findHorizonToken(text: string): HorizonToken | null {
     }
     const horizon = match[1].toLowerCase().split(/\s+/).join(' ') as Horizon;
     return { state: horizon, start, end: markerEnd + match[0].length };
+}
+
+/**
+ * {@link text} without a valid horizon at its end and the whitespace before it.
+ *
+ * Multi-step tasks use it to keep a horizon after a step out of the step's strikethrough:
+ * `~~submit 🔭 today~~` would make the horizon invalid.
+ */
+export function withoutTrailingHorizon(text: string): string {
+    return text.replace(HORIZON_AT_END, '');
 }
 
 export function horizonOf(description: string): HorizonState {
@@ -105,8 +119,9 @@ export function horizonAttributeValue(state: HorizonState): string | null {
 /**
  * Return {@link description} with its horizon set to {@link horizon}, or removed if it is null.
  *
- * An existing horizon is replaced in place. A new one goes after the description's text, or just before
- * the multi-step marker if there is one, so that it doesn't become part of the last step.
+ * An existing horizon is replaced in place. A new one goes at the end of the description, after multi-step
+ * steps too: it is auxiliary, so it shouldn't stand between the title and the steps. Steps keep it out of
+ * their strikethrough (see {@link withoutTrailingHorizon}).
  */
 export function setHorizon(description: string, horizon: Horizon | null): string {
     const token = findHorizonToken(description);
@@ -126,10 +141,6 @@ export function setHorizon(description: string, horizon: Horizon | null): string
         return description.slice(0, token.start) + newToken + separator + after;
     }
 
-    const stepsStart = description.indexOf(MULTI_STEP_MARKER);
-    if (stepsStart !== -1) {
-        return joinWithSpace(description.slice(0, stepsStart), newToken + ' ' + description.slice(stepsStart));
-    }
     return joinWithSpace(description, newToken);
 }
 

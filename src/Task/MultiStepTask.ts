@@ -1,4 +1,5 @@
 import { TaskRegularExpressions } from './TaskRegularExpressions';
+import { withoutTrailingHorizon } from './Horizon';
 
 /**
  * Fork feature: multi-step tasks. Spec: fork-features/multi-step-tasks.md
@@ -69,21 +70,22 @@ function findSteps(description: string): Step[] {
 }
 
 /**
- * The step in one segment between separators, or null if it holds nothing but whitespace and tags.
+ * The step in one segment between separators, or null if it holds nothing but whitespace, tags and a horizon.
  *
  * Trailing tags stay outside the strikethrough: the tag pattern allows `~`, so `~~bake #home~~`
- * would turn the tag into `#home~~`.
+ * would turn the tag into `#home~~`. So does a horizon at the end (t7 fork feature: horizon):
+ * `~~submit 🔭 today~~` would make it invalid.
  */
 function findStepText(description: string, segmentStart: number, segmentEnd: number): Step | null {
     let text = description.slice(segmentStart, segmentEnd);
     const leadingWhitespace = text.length - text.trimStart().length;
     text = text.trimStart();
 
-    let withoutTag = text;
+    let rest = text;
     do {
-        text = withoutTag;
-        withoutTag = text.replace(TaskRegularExpressions.hashTagsFromEnd, '');
-    } while (withoutTag !== text);
+        text = rest;
+        rest = withoutTrailingHorizon(text.replace(TaskRegularExpressions.hashTagsFromEnd, '').trimEnd());
+    } while (rest !== text);
     text = text.trimEnd();
 
     if (text === '') {

@@ -26,7 +26,7 @@ There is no setting. Tasks without the marker behave exactly as upstream.
 ## Requirements
 
 1. A description has steps when it contains `🪜` (optionally followed by U+FE0F). The steps are the text after the first marker, up to the end of the description, split at `//` with whitespace before it and whitespace or the end of the description after it. So `https://example.com` and `a//b` don't split.
-2. A step's text is its segment without surrounding whitespace and without trailing tags. A segment that is empty or holds only tags is not a step. A step is done when its text starts and ends with `~~`.
+2. A step's text is its segment without surrounding whitespace and without trailing tags, nor a [horizon](horizon.md) at its end. A segment that is empty or holds only tags (and a horizon) is not a step. A step is done when its text starts and ends with `~~`.
 3. Toggling a task with steps (`Task.toggle()`, which all the toggle actions above use):
     - into a status of type DONE from one that is not, with two or more open steps: strikes the first open step through and keeps the status, dates and everything else. No done date, no new occurrence, no On Completion action.
     - into DONE with exactly one open step: strikes it through, then completes the task as upstream (done date, new occurrence, On Completion).

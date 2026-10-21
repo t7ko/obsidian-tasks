@@ -91,6 +91,19 @@ describe('MultiStepTask - toggleStep() when toggling into DONE', () => {
         });
     });
 
+    it('should keep a horizon at the end outside the strikethrough', () => {
+        expect(advance('Renew 🪜 ~~fill form~~ // submit 🔭 this week')).toEqual({
+            description: 'Renew 🪜 ~~fill form~~ // ~~submit~~ 🔭 this week',
+            keepStatus: false,
+        });
+        expect(advance('🪜 ~~a~~ // b #home 🔭 today #x')).toEqual({
+            description: '🪜 ~~a~~ // ~~b~~ #home 🔭 today #x',
+            keepStatus: false,
+        });
+        expect(advance('🪜 a // 🔭 today')).toEqual({ description: '🪜 ~~a~~ // 🔭 today', keepStatus: false });
+        expect(advance('🪜 a 🔭 tomorow')).toEqual({ description: '🪜 ~~a 🔭 tomorow~~', keepStatus: false });
+    });
+
     it('should not count a segment holding only tags as a step', () => {
         expect(advance('🪜 a // #home')).toEqual({ description: '🪜 ~~a~~ // #home', keepStatus: false });
     });
@@ -115,6 +128,13 @@ describe('MultiStepTask - toggleStep() for other status changes', () => {
     it('should reopen the last step when un-checking a task with every step done', () => {
         expect(toggleStep('🪜 ~~a~~ // ~~b~~ #x', true, false)).toEqual({
             description: '🪜 ~~a~~ // b #x',
+            keepStatus: false,
+        });
+    });
+
+    it('should reopen the last step before a horizon', () => {
+        expect(toggleStep('🪜 ~~a~~ // ~~b~~ 🔭 today', true, false)).toEqual({
+            description: '🪜 ~~a~~ // b 🔭 today',
             keepStatus: false,
         });
     });
@@ -162,6 +182,12 @@ describe('MultiStepTask - toggling tasks', () => {
         for (let i = 1; i < lines.length; i++) {
             expect(toggle(lines[i - 1])).toEqual([lines[i]]);
         }
+    });
+
+    it('should complete a task with a horizon after its steps, keeping the horizon valid', () => {
+        expect(toggle('- [ ] Renew 🪜 ~~a~~ // b 🔭 this week 📅 2026-10-30')).toEqual([
+            '- [x] Renew 🪜 ~~a~~ // ~~b~~ 🔭 this week 📅 2026-10-30 ✅ 2026-10-17',
+        ]);
     });
 
     it('should reopen the last step when un-checking', () => {

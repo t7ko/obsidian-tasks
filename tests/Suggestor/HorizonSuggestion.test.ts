@@ -1,41 +1,60 @@
+import moment from 'moment';
 import { horizonSuggestions } from '../../src/Suggestor/HorizonSuggestion';
+import { DEFAULT_SYMBOLS, DefaultTaskSerializer } from '../../src/TaskSerializer/DefaultTaskSerializer';
+import { Priority } from '../../src/Task/Priority';
+
+window.moment = moment;
 
 /**
- * Apply the first suggestion as the editor would, and return the new line.
+ * Split a line with a '|' for the cursor into the line and the cursor position.
  */
-function applyFirst(lineWithCursor: string) {
+function parse(lineWithCursor: string) {
     const cursorPos = lineWithCursor.indexOf('|');
-    const line = lineWithCursor.replace('|', '');
-    const suggestion = horizonSuggestions(line, cursorPos, false)[0];
+    return { line: lineWithCursor.replace('|', ''), cursorPos };
+}
+
+/**
+ * Apply a suggestion as the editor would, the first one unless {@link displayText} is given,
+ * and return the new line with a '|' at the new cursor.
+ */
+function apply(lineWithCursor: string, displayText?: string) {
+    const { line, cursorPos } = parse(lineWithCursor);
+    const suggestions = horizonSuggestions(line, cursorPos, false);
+    const suggestion =
+        displayText === undefined ? suggestions[0] : suggestions.find((s) => s.displayText === displayText)!;
     const insertAt = suggestion.insertAt ?? cursorPos;
-    return line.slice(0, insertAt) + suggestion.appendText + line.slice(insertAt + (suggestion.insertSkip ?? 0));
+    const newCursor = insertAt + suggestion.appendText.length;
+    const newLine =
+        line.slice(0, insertAt) + suggestion.appendText + line.slice(insertAt + (suggestion.insertSkip ?? 0));
+    return newLine.slice(0, newCursor) + '|' + newLine.slice(newCursor);
 }
 
 function displayTexts(lineWithCursor: string, dataviewMode = false) {
-    const cursorPos = lineWithCursor.indexOf('|');
-    const line = lineWithCursor.replace('|', '');
+    const { line, cursorPos } = parse(lineWithCursor);
     return horizonSuggestions(line, cursorPos, dataviewMode).map((suggestion) => suggestion.displayText);
 }
 
 describe('horizon suggestions', () => {
-    it.each(['- [ ] Buy milk hor|', '- [ ] Buy milk Horizon|', '- [ ] Buy milk hori| 📅 2026-10-20'])(
-        'should offer the marker in "%s"',
-        (line: string) => {
-            expect(displayTexts(line)).toEqual(['🔭 horizon']);
-        },
-    );
+    it.each([
+        '- [ ] Buy milk hor|',
+        '- [ ] Buy milk Horizon|',
+        '- [ ] Buy milk hori| 📅 2026-10-20',
+        '- [ ] Read about 📅 calendars hor|',
+    ])('should offer the marker in "%s"', (line: string) => {
+        expect(displayTexts(line)).toEqual(['🔭 horizon']);
+    });
 
     it('should replace the typed word with the marker', () => {
-        expect(applyFirst('- [ ] Buy milk hor| 📅 2026-10-20')).toEqual('- [ ] Buy milk 🔭  📅 2026-10-20');
+        expect(apply('- [ ] Buy milk hor| 📅 2026-10-20')).toEqual('- [ ] Buy milk 🔭 | 📅 2026-10-20');
     });
 
     it.each([
         '- [ ] Buy milk ho|',
         '- [ ] Buy milk anchor|',
         '- [ ] Buy milk today|',
-        '- [ ] Buy milk 📅 2026-10-20 hor|',
-        '- [ ] Buy milk ⏫ hor|',
+        '- [ ] Buy milk ⏫ ho|',
         '- [ ] Buy milk 🔭 today hor|',
+        '- [ ] Buy milk 🔭 today ⏫ hor|',
         '- [ ] Buy milk hor| 🔭 today',
     ])('should offer nothing in "%s"', (line: string) => {
         expect(displayTexts(line)).toEqual([]);
@@ -43,6 +62,7 @@ describe('horizon suggestions', () => {
 
     it('should offer nothing in the Dataview format', () => {
         expect(displayTexts('- [ ] Buy milk hor|', true)).toEqual([]);
+        expect(displayTexts('- [ ] Buy milk ⏫ hor|', true)).toEqual([]);
         expect(displayTexts('- [ ] Buy milk 🔭 |', true)).toEqual([]);
     });
 
@@ -70,8 +90,45 @@ describe('horizon suggestions', () => {
     });
 
     it('should replace the marker and typed text with the chosen horizon', () => {
-        expect(applyFirst('- [ ] Buy milk 🔭 this w| 📅 2026-10-20')).toEqual(
-            '- [ ] Buy milk 🔭 this week  📅 2026-10-20',
+        expect(apply('- [ ] Buy milk 🔭 this w| 📅 2026-10-20')).toEqual('- [ ] Buy milk 🔭 this week | 📅 2026-10-20');
+    });
+
+    describe('after the Tasks fields', () => {
+        it.each(['- [ ] Buy milk ⏫ hor|', '- [ ] Buy milk 📅 2026-10-20 horizon|', '- [ ] Buy milk 🔺hor|'])(
+            'should offer all horizons in "%s"',
+            (line: string) => {
+                expect(displayTexts(line)).toEqual([
+                    '🔭 today',
+                    '🔭 tomorrow',
+                    '🔭 this week',
+                    '🔭 next week',
+                    '🔭 this month',
+                    '🔭 next month',
+                ]);
+            },
         );
+
+        it.each([
+            ['- [ ] Buy milk ⏫ hor|', '- [ ] Buy milk 🔭 this week ⏫ |'],
+            ['- [ ] Buy milk 🔺 📅 2026-10-20 hor|', '- [ ] Buy milk 🔭 this week 🔺 📅 2026-10-20 |'],
+            ['- [ ] Buy milk ⏫ hor| 📅 2026-10-20', '- [ ] Buy milk 🔭 this week ⏫| 📅 2026-10-20'],
+            ['- [ ] Buy milk 🔺hor|', '- [ ] Buy milk 🔭 this week 🔺|'],
+            ['- [ ] Buy milk #shop ⏫ #home hor|', '- [ ] Buy milk #shop 🔭 this week ⏫ #home |'],
+            ['- [ ] Buy milk ⏫ hor| ^abc123', '- [ ] Buy milk 🔭 this week ⏫| ^abc123'],
+            ['- [ ] Pack 🪜 bags // car ⏫ hor|', '- [ ] Pack 🪜 bags // car 🔭 this week ⏫ |'],
+            ['- [ ] ⏫ hor|', '- [ ] 🔭 this week ⏫ |'],
+        ])('in "%s" should put the horizon before the fields: "%s"', (line: string, expected: string) => {
+            expect(apply(line, '🔭 this week')).toEqual(expected);
+        });
+
+        it('should leave the fields readable by Tasks', () => {
+            const newLine = apply('- [ ] Buy milk ⏫ 📅 2026-10-20 hor|').replace('|', '');
+            const details = new DefaultTaskSerializer(DEFAULT_SYMBOLS).deserialize(
+                newLine.slice('- [ ] '.length).trim(),
+            );
+            expect(details.description).toEqual('Buy milk 🔭 today');
+            expect(details.priority).toEqual(Priority.High);
+            expect(details.dueDate).toEqualMoment(moment('2026-10-20'));
+        });
     });
 });

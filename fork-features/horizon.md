@@ -67,7 +67,14 @@ x This week
   No horizon
 ```
 
-Choosing a value replaces the task's horizon in place, or adds `🔭 <value>` at the end of the description, after a space. `No horizon` removes the 🔭 and its value. Choosing the current value changes nothing. The menu ends with a separator and the items of [nails](nails.md): `Add nail` and, for a task with nails, `Remove nail`.
+Choosing a value replaces the task's horizon in place, or adds `🔭 <value>` at the end of the description, after a space. In a [multi-step task](multi-step-tasks.md) that is after the steps, and striking a step through leaves the horizon outside the `~~`:
+
+```text
+- [ ] Renew passport 🪜 ~~fill form~~ // submit 🔭 this week 📅 2026-10-30
+- [x] Renew passport 🪜 ~~fill form~~ // ~~submit~~ 🔭 this week 📅 2026-10-30 ✅ 2026-10-21
+```
+
+`No horizon` removes the 🔭 and its value. Choosing the current value changes nothing. The menu ends with a separator and the items of [nails](nails.md): `Add nail` and, for a task with nails, `Remove nail`.
 
 A task without a horizon shows a faint grey 🔭 at the end of its line, after all its fields:
 
@@ -81,7 +88,16 @@ It brightens while the pointer is over the task, and a left or right click on it
 
 In the Tasks emoji format, typing `hor` (or more of `horizon`) offers `🔭 horizon`, which inserts the 🔭 and a space. Right after them, the popup offers the six values, filtered by what has been typed.
 
-`🔭 horizon` is offered only while the line has no 🔭 yet and no Tasks field emoji (📅, ⏫, 🔁 and so on) comes before the cursor, because a horizon typed after the fields would hide them (see Requirements).
+`🔭 horizon` is offered only while the line has no 🔭 yet.
+
+After the Tasks fields (📅, ⏫, 🔁 and so on), a horizon typed at the cursor would hide them (see Requirements). There `hor` offers the six values themselves, `🔭 today` to `🔭 next month`. The chosen one goes at the end of the description, before the fields, and the typed word is deleted; the cursor stays where the word was:
+
+```text
+- [ ] Call the supplier ⏫ 📅 2026-10-23 hor
+- [ ] Call the supplier 🔭 today ⏫ 📅 2026-10-23
+```
+
+Where the fields start is found with Tasks' own parser, so an emoji in the description's text (`Read about 📅 calendars`) is not a field.
 
 ### Styling
 
@@ -106,7 +122,7 @@ li.plugin-tasks-list-item:not([data-task-horizon]) > .tasks-list-text::after {
 3. Filters, sorting and grouping behave as described above. Sorting and grouping follow the order of meaning, never the alphabet. A filter line starting with `horizon` that is not understood gives an error listing the valid forms.
 4. Setting a horizon from the menu:
    - replaces the existing token in place (for an invalid horizon, the 🔭 becomes `🔭 <value>` and the text after it stays);
-   - otherwise adds it after the description's text, separated by one space. If the description has multi-step steps (🪜), it goes just before the 🪜, so it does not become part of the last step and is not struck through with it;
+   - otherwise adds it at the end of the description's text, separated by one space, after multi-step steps (🪜) too;
    - writes the value in lowercase with single spaces.
 5. `No horizon` removes the token and the whitespace before it, keeping one space between the text around it.
 6. Menu changes are saved through `replaceTaskWithTasks`, changing only the description.
@@ -117,6 +133,7 @@ li.plugin-tasks-list-item:not([data-task-horizon]) > .tasks-list-text::after {
 11. Live Preview and Source mode don't change.
 12. A new occurrence of a recurring task keeps the horizon, as it keeps the rest of the description.
 13. `hide horizon` and `show horizon` are query layout options, like upstream's `hide priority`: they work in the Global Query and in presets, and the last one wins. `hide horizon` gives the query's result lists the class `tasks-layout-hide-horizon`, under which CSS hides `span.task-horizon` and the placeholder; each task's rendered HTML stays the same.
+14. In a multi-step task, a valid horizon at the end of a step (normally the last one) is not part of the step's text, like trailing tags: striking the step through leaves it outside the `~~`, so it stays valid, and a segment holding only a horizon and tags is not a step.
 
 Accepted consequences:
 
@@ -137,6 +154,8 @@ Accepted consequences:
 - **The placeholder is at the end of the line.** The description's own `::after` is the priority menu's placeholder. The inner text span can't host one: a click on its `::after` can't be told apart from a click on its text. A real element would change upstream's renderer approval files. So the placeholder is the `::after` of `span.tasks-list-text`, whose children are all component spans: a click whose target is that span itself came from the placeholder.
 - **Menu labels without a "Horizon:" prefix**: the menu opens from the 🔭, so the context is clear; `No horizon` is last, after a separator, as the odd one out.
 - **Auto-suggest needs `hor`**, not the value words: `today`, `this`, `next`, `week` are common words, and a match makes Enter accept the suggestion instead of starting a new line.
+- **After the fields, auto-suggest offers the values in one step** (added 2026-10-21; the user typed `hor` after 🔺 and got nothing). Elsewhere it takes two steps, `🔭 horizon` and then the value, but Tasks' popup always leaves the cursor at the end of the text it inserts, so a 🔭 written before the fields can't get the cursor and the value popup. Rejected: writing `🔭` at the cursor and moving it before the fields when a value is chosen, which leaves the fields hidden if the popup is closed between the two steps.
+- **New horizons go at the end of the description, after multi-step steps too** (changed 2026-10-21, the user's choice): the horizon is auxiliary, so it shouldn't stand between the title and the steps. Steps then keep a horizon at their end out of the strikethrough, as they do with trailing tags, because `~~submit 🔭 this week~~` would make it invalid (`week~~` is not a value). A horizon already in the description stays where it is when changed. Before, a new horizon went just before the 🪜.
 - **English strings only**, like upstream's priority menu; no i18n keys.
 - **Vanilla Tasks compatibility: risky but acceptable** (accepted by the user). Devices without the fork show `🔭 this week` as description text and copy it into new occurrences; query blocks using the new instructions show an error there.
-- **Code layout for cheap rebases**: new files `src/Task/Horizon.ts`, `src/Query/Filter/HorizonField.ts`, `src/ui/EditInstructions/HorizonInstructions.ts`, `src/ui/Menus/HorizonMenu.ts`, `src/Renderer/HorizonMenuTargets.ts`, `src/Renderer/HorizonMenuTargets.scss`, `src/Suggestor/HorizonSuggestion.ts`. Upstream files get one registration line in `FilterParser.ts`, an import and a call after `taskToHtml` in `TaskLineRenderer.renderTaskLine`, an import and a call in `Suggestor.ts`, one `@import` in `styles.scss`, a property and a key in `QueryLayoutOptions.ts` and a line in `QueryLayout.ts` for `hide horizon`, and lines in the tests that list every field or show/hide option (`tests/Query/Query.test.ts`, `tests/Layout/QueryLayoutOptions.test.ts`, `tests/Layout/TaskLayout.test.ts`).
+- **Code layout for cheap rebases**: new files `src/Task/Horizon.ts`, `src/Query/Filter/HorizonField.ts`, `src/ui/EditInstructions/HorizonInstructions.ts`, `src/ui/Menus/HorizonMenu.ts`, `src/Renderer/HorizonMenuTargets.ts`, `src/Renderer/HorizonMenuTargets.scss`, `src/Suggestor/HorizonSuggestion.ts`. Upstream files get one registration line in `FilterParser.ts`, an import and a call after `taskToHtml` in `TaskLineRenderer.renderTaskLine`, an import and a call in `Suggestor.ts`, one `@import` in `styles.scss`, an import and one call in the multi-step feature's `src/Task/MultiStepTask.ts` (`withoutTrailingHorizon` in `findStepText`), a property and a key in `QueryLayoutOptions.ts` and a line in `QueryLayout.ts` for `hide horizon`, and lines in the tests that list every field or show/hide option (`tests/Query/Query.test.ts`, `tests/Layout/QueryLayoutOptions.test.ts`, `tests/Layout/TaskLayout.test.ts`).
