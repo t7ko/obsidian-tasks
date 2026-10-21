@@ -38,7 +38,7 @@ The priority menu and the horizon menu end with a separator and the same items:
 
 In Live Preview and Source mode:
 
-- A right-click on a task line adds `Add nail` and, if the task has nails, `Remove nail` to the editor's context menu. They act on the line with the cursor; a right-click puts the cursor where it clicks, unless it clicks inside selected text.
+- A right-click on a task line adds `Add nail` and, if the task has nails, `Remove nail` to the editor's context menu. They act on the line with the cursor; a right-click puts the cursor where it clicks, unless it clicks inside selected text. A right-click on one of the task's dates opens the [date menu](editor-date-menu.md) instead, without these items.
 - The commands `Add nail` and `Remove nail` (command palette, under Tasks; hotkeys can be set for them) act on the task on the cursor's line. They are offered only on a task line, and `Remove nail` only when the task has nails.
 - Auto-suggest: typing `nai` or `nail` in a task's description offers `⚠️ add nail` and, if the task has nails, `⚠️ remove nail`. Choosing one deletes the typed word and adds or removes a nail at the start of the description, wherever the cursor is; the cursor stays where the word was.
 

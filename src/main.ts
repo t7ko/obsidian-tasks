@@ -24,6 +24,7 @@ import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvi
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { startHorizonHistory } from './HorizonHistory/startHorizonHistory';
 import { registerNailCommands } from './Commands/NailCommands';
+import { editorDateMenuExtension } from './Obsidian/EditorDateMenuExtension';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -79,6 +80,8 @@ export default class TasksPlugin extends Plugin {
         startHorizonHistory(this, events);
         // t7: nails
         registerNailCommands(this);
+        // t7: editor date menu
+        this.registerEditorExtension(editorDateMenuExtension());
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
