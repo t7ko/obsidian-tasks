@@ -14,3 +14,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Horizon history](horizon-history.md) | A daily history of the tasks with a horizon, or of all open tasks: each planned task gets a planned date and shows a badge when late; `planned`, `opened`, `is late` and `group by lateness` serve weekly reviews |
 | [Nails](nails.md) | Each ⚠️ at the start of a task is a nail, one more request from someone waiting for it: add and remove them from menus, the editor and auto-suggest; filter, sort and group by them |
 | [Date menu in the editor](editor-date-menu.md) | A right-click on a task's date in the editor opens the date menu of query results, plus `Pick a date...` for the calendar |
+| [🏁 delete for typed recurrences](recurrence-delete-on-completion.md) | Optionally, a 🔁 typed into a task in the editor brings `🏁 delete` with it, so completing the task leaves only its next occurrence |

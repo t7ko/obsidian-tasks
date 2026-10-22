@@ -8,6 +8,8 @@ export interface ForkSettings {
     horizonHistory: HorizonHistorySettings;
     /** Missing in settings saved before it was added */
     horizon?: HorizonSettings;
+    /** Missing in settings saved before it was added */
+    recurrence?: RecurrenceSettings;
 }
 
 /**
@@ -28,6 +30,14 @@ export interface HorizonSettings {
     placeholder: boolean;
 }
 
+/**
+ * Recurring tasks. Spec: `fork-features/recurrence-delete-on-completion.md`.
+ */
+export interface RecurrenceSettings {
+    /** Whether a 🔁 typed in the editor gets `🏁 delete` added */
+    deleteOnCompletion: boolean;
+}
+
 export function defaultForkSettings(): Required<ForkSettings> {
     return {
         horizonHistory: {
@@ -36,6 +46,9 @@ export function defaultForkSettings(): Required<ForkSettings> {
         },
         horizon: {
             placeholder: true,
+        },
+        recurrence: {
+            deleteOnCompletion: false,
         },
     };
 }

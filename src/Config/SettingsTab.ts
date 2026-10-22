@@ -22,6 +22,7 @@ import { createStatusRegistryReport } from '../Statuses/StatusRegistryReport';
 import { i18n } from '../i18n/i18n';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { horizonHistorySettingsGroup } from '../HorizonHistory/HorizonHistorySettingsGroup';
+import { recurrenceDeleteOnCompletionSettingItem } from './RecurrenceDeleteOnCompletionSetting';
 import * as Themes from './Themes';
 import {
     POSTPONE_DATE_FIELD_VALUES,
@@ -994,6 +995,7 @@ export class SettingsTab extends PluginSettingTab {
                         'https://publish.obsidian.md/tasks/Getting+Started/Recurring+Tasks',
                     ),
                 },
+                recurrenceDeleteOnCompletionSettingItem(this.plugin), // t7: 🏁 delete for typed recurrences
             ],
         };
     }

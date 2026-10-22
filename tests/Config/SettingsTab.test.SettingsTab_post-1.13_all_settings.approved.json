@@ -292,6 +292,11 @@
         "name": "Remove scheduled date on recurrence",
         "desc": "<p>Enabling this will make the next recurrence of a task have no Scheduled (⏳) date, when at least one of Start (🛫) or Due (📅) dates is present.</p><p>This is for when you want the Start and Due dates to carry forward to the next recurrence, but you will set the Scheduled date in future, once you plan to work on it.</p>",
         "render": "[Function]"
+      },
+      {
+        "name": "Add 🏁 delete to typed recurrences",
+        "desc": "When you put a 🔁 into a task line in the editor, by typing it or picking it from Tasks' auto-suggest, add 🏁 delete right after it, so that completing the task leaves only its next occurrence. Removing the 🔁 before leaving the line removes it too, and Undo (Ctrl+Z) takes it back. Tasks with a 🏁 already, pasted text and the edit modal are left alone.",
+        "render": "[Function]"
       }
     ],
     "type": "group"

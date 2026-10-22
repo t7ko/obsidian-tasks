@@ -25,6 +25,7 @@ import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { startHorizonHistory } from './HorizonHistory/startHorizonHistory';
 import { registerNailCommands } from './Commands/NailCommands';
 import { editorDateMenuExtension } from './Obsidian/EditorDateMenuExtension';
+import { recurrenceDeleteOnCompletionExtension } from './Obsidian/RecurrenceDeleteOnCompletionExtension';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -82,6 +83,8 @@ export default class TasksPlugin extends Plugin {
         registerNailCommands(this);
         // t7: editor date menu
         this.registerEditorExtension(editorDateMenuExtension());
+        // t7: 🏁 delete for typed recurrences
+        this.registerEditorExtension(recurrenceDeleteOnCompletionExtension());
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
