@@ -20,6 +20,7 @@ import { StatusType } from '../Statuses/StatusConfiguration';
 import { horizonSuggestions } from './HorizonSuggestion';
 import { addMultiStepSuggestion } from './MultiStepSuggestion';
 import { nailSuggestions } from './NailSuggestion';
+import { isRuleFollowedBySpace, keepsTypedWords, whenDoneSuggestions } from './RecurrenceSuggestions';
 import type { SuggestInfo, SuggestionBuilder } from '.';
 
 /**
@@ -364,14 +365,15 @@ function addRecurrenceValueSuggestions(recurrenceSymbol: string, parameters: Sug
             // If the text matches a valid recurence description, present it as a 1st suggestion.
             // We also add a nice checkmark in this case to denote it's a complete valid recurrence description
             const parsedRecurrence = Recurrence.fromText({
-                recurrenceRuleText: recurrenceString,
+                recurrenceRuleText: recurrenceString.trim(), // t7: recurrence suggestions
                 occurrence: new Occurrence({
                     startDate: null,
                     scheduledDate: null,
                     dueDate: null,
                 }),
             })?.toText();
-            if (parsedRecurrence) {
+            if (parsedRecurrence && keepsTypedWords(recurrenceString, parsedRecurrence)) {
+                // t7: recurrence suggestions (above: only a rule that keeps every typed word)
                 const appendedText = `${recurrencePrefix} ${parsedRecurrence}` + parameters.postfix;
                 results.push({
                     suggestionType: 'match',
@@ -384,9 +386,22 @@ function addRecurrenceValueSuggestions(recurrenceSymbol: string, parameters: Sug
                 // don't suggest anything. The user is trying to continue to type something that is likely
                 // not related to recurrence. When she starts a new word, maybe the recurrence matches
                 // will be relevant again
-                if (recurrenceMatch[0] == appendedText) return [];
+                // t7: recurrence suggestions (also when more than one space follows the rule)
+                if (recurrenceMatch[0] == appendedText || isRuleFollowedBySpace(recurrenceMatch[0], appendedText))
+                    return [];
             }
         }
+
+        // t7: recurrence suggestions: `<rule> when done` while `when done` is typed
+        results.push(
+            ...whenDoneSuggestions(
+                recurrenceString,
+                recurrencePrefix,
+                recurrenceMatch.index,
+                calculateSkipValueForMatch(recurrenceMatch[0], parameters),
+                parameters.postfix,
+            ),
+        );
 
         // Now to generic predefined suggestions.
         // If we get a partial match with some of the suggestions (e.g. the user started typing "every d"),
