@@ -173,6 +173,16 @@ describe('StepsMarkerSection - inserting the marker', () => {
         expect(await apply()).toEqual(['- [ ] Renew passport 🪜 fill form // submit']);
     });
 
+    it('should insert the marker before a horizon ending the description (t7 horizon)', async () => {
+        const { description, button, apply } = renderModal('- [ ] Renew passport 🔭 this week 📅 2026-10-30');
+
+        await fireEvent.click(button);
+        expect(withCursor(description)).toEqual('Renew passport 🪜 | 🔭 this week');
+
+        await fireEvent.input(description, { target: { value: 'Renew passport 🪜 fill form // submit 🔭 this week' } });
+        expect(await apply()).toEqual(['- [ ] Renew passport 🪜 fill form // submit 🔭 this week 📅 2026-10-30']);
+    });
+
     it('should grey the button out once the marker is inserted', async () => {
         const { button } = renderModal('- [ ] Renew passport');
         expect(button.disabled).toEqual(false);

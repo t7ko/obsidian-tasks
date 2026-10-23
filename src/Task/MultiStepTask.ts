@@ -159,7 +159,8 @@ export interface StepsMarkerInsertion {
 
 /**
  * How the edit modal's steps button inserts {@link MULTI_STEP_MARKER} into a description: in place of the
- * selection, as typing would, and kept apart from the text on both sides by a space.
+ * selection, as typing would, and kept apart from the text on both sides by a space. With the cursor at the
+ * end, it goes before a horizon ending the description.
  *
  * @param description - the description being edited
  * @param selectionStart - the start of the description field's selection, or its cursor
@@ -170,8 +171,20 @@ export function stepsMarkerInsertion(
     selectionStart: number,
     selectionEnd: number,
 ): StepsMarkerInsertion {
-    const from = selectionStart;
-    const to = selectionEnd;
+    let from = selectionStart;
+    let to = selectionEnd;
+
+    // t7 fork feature: horizon. With the cursor at the end of the description, as the modal opens, a horizon
+    // there stays after the steps, where new horizons go too.
+    if (from === to && description.slice(to).trim() === '') {
+        const text = description.slice(0, from).trimEnd();
+        const title = withoutTrailingHorizon(text);
+        if (title !== text) {
+            from = title.length;
+            to = from;
+        }
+    }
+
     const before = description.slice(0, from);
     const after = description.slice(to);
 

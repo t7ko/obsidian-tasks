@@ -41,6 +41,7 @@ There is no setting. Tasks without the marker behave exactly as upstream.
 8. The editor auto-suggest offers `🪜 steps` (inserting the marker and a space) among the task property suggestions, in the emoji task format only, when the line has no marker yet.
 9. The edit modal has a section labelled Steps, followed by a line, just before its first dates section: under the line after Priority, or right under the description when Priority is hidden. It stays there when the modal's options show Priority while the modal is open. Its button `Insert 🪜`:
     - replaces the description field's selection (or inserts at its cursor) with the marker, with a space before it unless it is at the start or after whitespace, and a space after it. If text follows without whitespace, one more space keeps it apart;
+    - with no selection and only whitespace after the cursor, inserts before a valid [horizon](horizon.md) that ends the description, so the steps typed there come before it;
     - leaves the focus in the description field and the cursor just after the marker and its space;
     - is one step in the field's undo history (Ctrl+Z);
     - is disabled, with a tooltip saying the description already has the marker, whenever the description contains it, as typed or inserted;

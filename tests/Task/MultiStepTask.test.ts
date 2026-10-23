@@ -195,6 +195,24 @@ describe('MultiStepTask - stepsMarkerInsertion()', () => {
         expect(insert(before)).toEqual(after);
     });
 
+    it.each([
+        ['Renew passport 🔭 this week|', 'Renew passport 🪜 | 🔭 this week'],
+        ['Renew passport 🔭 this week |', 'Renew passport 🪜 | 🔭 this week '],
+        ['Renew passport 🔭️ next  month|', 'Renew passport 🪜 | 🔭️ next  month'],
+        ['🔭 today|', '🪜 | 🔭 today'],
+    ])('should insert the marker before a horizon at the end when the cursor is at the end: "%s"', (before, after) => {
+        expect(insert(before)).toEqual(after);
+    });
+
+    it.each([
+        ['Renew 🔭 this week passport|', 'Renew 🔭 this week passport 🪜 |'],
+        ['Renew 🔭 this|week|', 'Renew 🔭 this 🪜 |'],
+        ['Renew 🔭 this |week', 'Renew 🔭 this 🪜 | week'],
+        ['Renew 🔭|', 'Renew 🔭 🪜 |'],
+    ])('should insert the marker at the cursor elsewhere: "%s"', (before, after) => {
+        expect(insert(before)).toEqual(after);
+    });
+
     it('should leave the steps typed after it readable', () => {
         const description = 'Renew' + stepsMarkerInsertion('Renew', 5, 5).text + 'one // two';
         expect(toggleStep(description, false, true)?.description).toEqual('Renew 🪜 ~~one~~ // two');
