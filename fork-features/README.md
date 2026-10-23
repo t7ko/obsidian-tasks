@@ -16,3 +16,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Date menu in the editor](editor-date-menu.md) | A right-click on a task's date in the editor opens the date menu of query results, plus `Pick a date...` for the calendar |
 | [🏁 delete for typed recurrences](recurrence-delete-on-completion.md) | Optionally, a 🔁 typed into a task in the editor brings `🏁 delete` with it, so completing the task leaves only its next occurrence |
 | [Recurrence suggestions that keep what you typed](recurrence-suggestions.md) | Auto-suggest offers `<rule> when done`, and its ✅ suggestion no longer replaces typed words it didn't understand |
+| [`block` finds depends on](block-finds-depends-on.md) | Typing `block` (or `blo` ... `blocked`) in a task brings up auto-suggest's `⛔ depends on id`, as `dep` does |

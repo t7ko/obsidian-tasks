@@ -17,6 +17,7 @@ import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { searchForCandidateTasksForDependency } from '../ui/DependencyHelpers';
 import { escapeRegExp } from '../lib/RegExpTools';
 import { StatusType } from '../Statuses/StatusConfiguration';
+import { dependsOnForBlocked } from './BlockedSuggestion';
 import { horizonSuggestions } from './HorizonSuggestion';
 import { addMultiStepSuggestion } from './MultiStepSuggestion';
 import { nailSuggestions } from './NailSuggestion';
@@ -167,6 +168,8 @@ function addTaskPropertySuggestions(
     addMultiStepSuggestion(genericSuggestions, line, parameters.dataviewMode); // t7: multi-step tasks
 
     const matchingSuggestions = filterGeneralSuggestionsForWordAtCursor(genericSuggestions, parameters);
+    // t7: 'block' finds depends on
+    matchingSuggestions.push(...dependsOnForBlocked(genericSuggestions, symbols.dependsOnSymbol, parameters));
 
     // That's where we're adding all the suggestions in case there's nothing specific to match
     // (and we're allowed by the settings to bring back a zero-sized match)
