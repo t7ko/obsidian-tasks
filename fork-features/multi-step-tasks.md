@@ -20,6 +20,7 @@ Write the steps after the marker 🪜, separated by `//` with a space on each si
 - A recurring multi-step task is completed as usual when its last step is done, and the new occurrence starts again at step 1.
 - Choosing a status (status menu, "Change status to" commands, the edit modal) sets the whole task's status, as upstream: choosing Done completes the task with its steps as they are. A new occurrence still starts at step 1.
 - The edit modal shows the steps as part of the description, where they can be edited as text.
+- The edit modal has a **Steps** section between Priority and the dates. Its button `Insert 🪜` puts the marker into the description at the cursor and leaves the cursor after it, ready for the first step. It is greyed out while the description has a marker. With access keys on, Alt+P presses it.
 
 There is no setting. Tasks without the marker behave exactly as upstream.
 
@@ -38,7 +39,13 @@ There is no setting. Tasks without the marker behave exactly as upstream.
 6. Every new occurrence of a recurring task has all its steps reopened, whichever action created it.
 7. Setting a status through `handleNewStatus()` (status menu, status commands, edit modal) never advances a step.
 8. The editor auto-suggest offers `🪜 steps` (inserting the marker and a space) among the task property suggestions, in the emoji task format only, when the line has no marker yet.
-9. Parsing and writing task lines don't change: to every serializer the steps are description text, so vanilla Tasks reads the same fields from the same lines.
+9. The edit modal has a section labelled Steps, followed by a line, just before its first dates section: under the line after Priority, or right under the description when Priority is hidden. It stays there when the modal's options show Priority while the modal is open. Its button `Insert 🪜`:
+    - replaces the description field's selection (or inserts at its cursor) with the marker, with a space before it unless it is at the start or after whitespace, and a space after it. If text follows without whitespace, one more space keeps it apart;
+    - leaves the focus in the description field and the cursor just after the marker and its space;
+    - is one step in the field's undo history (Ctrl+Z);
+    - is disabled, with a tooltip saying the description already has the marker, whenever the description contains it, as typed or inserted;
+    - has the access key P, underlined in the label, when the Tasks setting for access keys is on.
+10. Parsing and writing task lines don't change: to every serializer the steps are description text, so vanilla Tasks reads the same fields from the same lines.
 
 Accepted consequences:
 
@@ -58,5 +65,8 @@ Accepted consequences:
 - **Un-checking reopens the last step only when every step is done**: that is the state finishing the last step leaves, so un-checking undoes exactly that click. When steps are open (the task was completed through a status or in vanilla Tasks), un-checking leaves them as they are.
 - **No separate display of the current step or progress in query results**: the strikethrough shows both, and more would mean changes in hot renderer files. It can be added later.
 - **The auto-suggest offers the marker**, as the user asked, since an emoji is awkward to type. Not in the Dataview format, where suggestions go inside brackets.
+- **The edit modal inserts the marker with a button in a section of its own, between Priority and the dates**, chosen by the user: the modal's description is a plain text field without Tasks' auto-suggest. Rejected: the button next to the Description label (proposed first), and a keyboard shortcut with nothing on screen. Access key P, free in the modal and a letter of "Steps".
+- **The button is greyed out while the description has a marker**, as the auto-suggest stops offering it: a second marker would only be step text. Rejected: turning it into a button that inserts a ` // ` separator.
+- **The insertion goes through `execCommand('insertText')`**, so that Ctrl+Z in the field takes it out again. It is deprecated (one lint warning), but nothing else adds to a text field's undo history; where it is missing (jsdom), the field's text is set directly.
 - **Vanilla Tasks compatibility: risky but acceptable**, accepted by the user (see "Accepted consequences"). Nothing is misparsed or lost; vanilla only completes the whole task at once.
-- **Code layout for cheap rebases**: the logic is in new files, `src/Task/MultiStepTask.ts` (string functions only; it imports nothing from `Task`, so no new import cycle) and `src/Suggestor/MultiStepSuggestion.ts`. Upstream files get small hooks: `src/Task/Task.ts` an import, three lines in `toggle()` and one property in `createNextOccurrence()`; `src/Suggestor/Suggestor.ts` an import and one call in `addTaskPropertySuggestions`. Two upstream approval files listing the emoji-format suggestions gain the `🪜 steps` line.
+- **Code layout for cheap rebases**: the logic is in new files, `src/Task/MultiStepTask.ts` (string functions only; it imports nothing from `Task`, so no new import cycle) and `src/Suggestor/MultiStepSuggestion.ts`. Upstream files get small hooks: `src/Task/Task.ts` an import, three lines in `toggle()` and one property in `createNextOccurrence()`; `src/Suggestor/Suggestor.ts` an import and one call in `addTaskPropertySuggestions`. Two upstream approval files listing the emoji-format suggestions gain the `🪜 steps` line. The edit modal's section is built by `src/ui/StepsMarkerSection.ts` (with its `.scss`) and added to the rendered form from `src/Obsidian/TaskModal.ts` (an import and one call after the form is mounted), not written into `src/ui/EditTask.svelte`: that file is one of upstream's most edited, and its HTML is in two approval files. The section goes just before the first dates section, which is never re-created; Svelte inserts the Priority block before its own anchor, which is above the section. `src/styles.scss` gets one `@import` next to the edit modal's.

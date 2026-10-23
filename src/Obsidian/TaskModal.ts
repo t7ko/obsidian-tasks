@@ -6,6 +6,7 @@ import EditTask from '../ui/EditTask.svelte';
 import type { Task } from '../Task/Task';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { Status } from '../Statuses/Status';
+import { addStepsMarkerSection } from '../ui/StepsMarkerSection';
 import { OptionsModal } from './OptionsModal';
 
 export interface TaskModalParams {
@@ -76,6 +77,9 @@ export class TaskModal extends Modal {
                 allTasks: this.allTasks,
             },
         });
+
+        // t7: multi-step tasks
+        addStepsMarkerSection(contentEl);
     }
 
     /**

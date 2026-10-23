@@ -6,7 +6,7 @@ import { resetSettings, updateSettings } from '../../src/Config/Settings';
 import { toggleLine } from '../../src/Commands/ToggleDone';
 import { Status } from '../../src/Statuses/Status';
 import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
-import { resetSteps, toggleStep } from '../../src/Task/MultiStepTask';
+import { resetSteps, stepsMarkerInsertion, toggleStep } from '../../src/Task/MultiStepTask';
 import { fromLine } from '../TestingTools/TestHelpers';
 
 window.moment = moment;
@@ -156,6 +156,48 @@ describe('MultiStepTask - resetSteps()', () => {
 
     it('should leave descriptions without steps alone', () => {
         expect(resetSteps('Call ~~Bob~~ Alice')).toEqual('Call ~~Bob~~ Alice');
+    });
+});
+
+describe('MultiStepTask - stepsMarkerInsertion()', () => {
+    /**
+     * Insert the marker into {@link withCursor}, where one `|` is the cursor and two `|` enclose the selection,
+     * and return the result with `|` at the new cursor.
+     */
+    function insert(withCursor: string) {
+        const start = withCursor.indexOf('|');
+        const last = withCursor.lastIndexOf('|');
+        const end = last === start ? start : last - 1;
+        const description = withCursor.replace(/\|/g, '');
+
+        const { from, to, text, cursor } = stepsMarkerInsertion(description, start, end);
+        const result = description.slice(0, from) + text + description.slice(to);
+        return result.slice(0, cursor) + '|' + result.slice(cursor);
+    }
+
+    it.each([
+        ['Renew passport|', 'Renew passport 🪜 |'],
+        ['Renew passport |', 'Renew passport 🪜 |'],
+        ['|', '🪜 |'],
+        ['|Renew passport', '🪜 | Renew passport'],
+        ['Renew| passport', 'Renew 🪜 | passport'],
+        ['Renew |passport', 'Renew 🪜 | passport'],
+        ['Renew|passport', 'Renew 🪜 | passport'],
+        ['Renew #home|', 'Renew #home 🪜 |'],
+    ])('should insert the marker at the cursor: "%s"', (before, after) => {
+        expect(insert(before)).toEqual(after);
+    });
+
+    it.each([
+        ['Renew |old steps|', 'Renew 🪜 |'],
+        ['Renew| old |passport', 'Renew 🪜 | passport'],
+    ])('should replace the selection: "%s"', (before, after) => {
+        expect(insert(before)).toEqual(after);
+    });
+
+    it('should leave the steps typed after it readable', () => {
+        const description = 'Renew' + stepsMarkerInsertion('Renew', 5, 5).text + 'one // two';
+        expect(toggleStep(description, false, true)?.description).toEqual('Renew 🪜 ~~one~~ // two');
     });
 });
 

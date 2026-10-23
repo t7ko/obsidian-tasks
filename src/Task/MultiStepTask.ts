@@ -147,3 +147,36 @@ export function resetSteps(description: string): string {
         .reverse()
         .reduce((result, step) => (step.done ? reopen(result, step) : result), description);
 }
+
+export interface StepsMarkerInsertion {
+    /** The text from {@link from} to {@link to} is replaced by {@link text} */
+    from: number;
+    to: number;
+    text: string;
+    /** Where the cursor goes afterwards: just after the marker and a space, ready for the first step */
+    cursor: number;
+}
+
+/**
+ * How the edit modal's steps button inserts {@link MULTI_STEP_MARKER} into a description: in place of the
+ * selection, as typing would, and kept apart from the text on both sides by a space.
+ *
+ * @param description - the description being edited
+ * @param selectionStart - the start of the description field's selection, or its cursor
+ * @param selectionEnd - the end of the selection; the same as {@link selectionStart} for a cursor
+ */
+export function stepsMarkerInsertion(
+    description: string,
+    selectionStart: number,
+    selectionEnd: number,
+): StepsMarkerInsertion {
+    const from = selectionStart;
+    const to = selectionEnd;
+    const before = description.slice(0, from);
+    const after = description.slice(to);
+
+    const spaceBefore = before === '' || /\s$/.test(before) ? '' : ' ';
+    const spaceAfter = after === '' || /^\s/.test(after) ? '' : ' ';
+    const text = `${spaceBefore}${MULTI_STEP_MARKER} ${spaceAfter}`;
+    return { from, to, text, cursor: from + text.length - spaceAfter.length };
+}
