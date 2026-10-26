@@ -4,7 +4,7 @@ A task can list steps in its description. Checking the task off finishes only it
 
 ## User-facing behaviour
 
-Write the steps after the marker 🪜, separated by `//` with a space on each side. Tasks' auto-suggest offers `🪜 steps` to insert the marker. Each click on the checkbox strikes the current step through with `~~`, and the task stays open until its last step:
+Write the steps after the marker 🪜, separated by `//` with a space on each side. Tasks' auto-suggest offers `🪜 steps` to insert the marker, when you type part of `steps` or the start of `ladder` (at least `lad`). Each click on the checkbox strikes the current step through with `~~`, and the task stays open until its last step:
 
 ```text
 - [ ] Renew passport 🪜 fill form // get photo // submit 📅 2026-10-30
@@ -38,7 +38,7 @@ There is no setting. Tasks without the marker behave exactly as upstream.
 5. Trailing tags stay outside the strikethrough (`~~bake~~ #home`): Tasks' tag pattern allows `~`, so `~~bake #home~~` would turn the tag into `#home~~`.
 6. Every new occurrence of a recurring task has all its steps reopened, whichever action created it.
 7. Setting a status through `handleNewStatus()` (status menu, status commands, edit modal) never advances a step.
-8. The editor auto-suggest offers `🪜 steps` (inserting the marker and a space) among the task property suggestions, in the emoji task format only, when the line has no marker yet.
+8. The editor auto-suggest offers `🪜 steps` (inserting the marker and a space) among the task property suggestions, in the emoji task format only, when the line has no marker yet. Besides the words Tasks matches against `🪜 steps`, it is offered for a word that is the start of `ladder`, at least `lad` and at least as long as the setting **Minimum match length for auto-suggest**; the word is the one Tasks matches (the letters around the cursor, at least one before it), and picking the suggestion replaces it, as for `ste`.
 9. The edit modal has a section labelled Steps, followed by a line, just before its first dates section: under the line after Priority, or right under the description when Priority is hidden. It stays there when the modal's options show Priority while the modal is open. Its button `Insert 🪜`:
     - replaces the description field's selection (or inserts at its cursor) with the marker, with a space before it unless it is at the start or after whitespace, and a space after it. If text follows without whitespace, one more space keeps it apart;
     - with no selection and only whitespace after the cursor, inserts before a valid [horizon](horizon.md) that ends the description, so the steps typed there come before it;
@@ -66,6 +66,7 @@ Accepted consequences:
 - **Un-checking reopens the last step only when every step is done**: that is the state finishing the last step leaves, so un-checking undoes exactly that click. When steps are open (the task was completed through a status or in vanilla Tasks), un-checking leaves them as they are.
 - **No separate display of the current step or progress in query results**: the strikethrough shows both, and more would mean changes in hot renderer files. It can be added later.
 - **The auto-suggest offers the marker**, as the user asked, since an emoji is awkward to type. Not in the Dataview format, where suggestions go inside brackets.
+- **`ladder` finds the marker too**, as the user asked: 🪜 is a ladder, the word that comes to mind for the emoji. Only the start of `ladder`, at least `lad`, not Tasks' usual rule (the word anywhere in the suggestion's text): that would also match `add`, a common word in tasks, and Enter at the end of a matching word picks the suggestion instead of starting a new line. Fewer letters would match `l` and `la` words. The suggestion stays `🪜 steps`: one suggestion, whatever word found it. It gets a `textToMatch` with `ladder` only while the word at the cursor is the start of `ladder`, so Tasks' own matching keeps it and replaces the word, with no new hook in `src/Suggestor/Suggestor.ts`.
 - **The edit modal inserts the marker with a button in a section of its own, between Priority and the dates**, chosen by the user: the modal's description is a plain text field without Tasks' auto-suggest. Rejected: the button next to the Description label (proposed first), and a keyboard shortcut with nothing on screen. Access key P, free in the modal and a letter of "Steps".
 - **The button is greyed out while the description has a marker**, as the auto-suggest stops offering it: a second marker would only be step text. Rejected: turning it into a button that inserts a ` // ` separator.
 - **The insertion goes through `execCommand('insertText')`**, so that Ctrl+Z in the field takes it out again. It is deprecated (one lint warning), but nothing else adds to a text field's undo history; where it is missing (jsdom), the field's text is set directly.

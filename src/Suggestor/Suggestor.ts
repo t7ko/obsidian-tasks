@@ -165,7 +165,7 @@ function addTaskPropertySuggestions(
     }
 
     addField(genericSuggestions, line, symbols.onCompletionSymbol, 'on completion');
-    addMultiStepSuggestion(genericSuggestions, line, parameters.dataviewMode); // t7: multi-step tasks
+    addMultiStepSuggestion(genericSuggestions, parameters); // t7: multi-step tasks
 
     const matchingSuggestions = filterGeneralSuggestionsForWordAtCursor(genericSuggestions, parameters);
     // t7: 'block' finds depends on
