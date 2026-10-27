@@ -214,7 +214,7 @@ export class SettingsTab extends PluginSettingTab {
             this.datesFromFilenamesGroup(),
             this.recurringTasksGroup(),
             this.taskEntryGroup(),
-            horizonHistorySettingsGroup(this.plugin, this.events), // t7: horizon history
+            horizonHistorySettingsGroup(this.plugin, this.events, () => this.refreshDomState()), // t7: horizon history
         ];
     }
 

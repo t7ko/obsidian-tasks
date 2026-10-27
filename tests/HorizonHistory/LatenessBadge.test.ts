@@ -197,7 +197,9 @@ describe('rendered tasks', () => {
     });
 
     it('follows the days-late settings', async () => {
-        updateSettings({ t7: { horizonHistory: { track: 'horizon', lateDays: { low: 1, medium: 2, high: 3 } } } });
+        updateSettings({
+            t7: { horizonHistory: { ...horizonHistorySettings(), lateDays: { low: 1, medium: 2, high: 3 } } },
+        });
         const task = taskAt('- [ ] Call Bob 🔭 today', 'a.md', 3);
         track(task, { planned: addDays(today, -2) });
         const badge = (await renderTask(task)).querySelector('.task-horizon-late') as HTMLElement;
@@ -314,5 +316,15 @@ describe('horizon menu', () => {
         const lines = linesBeforeNailItems(new HorizonMenu(taskAt('- [ ] Call Bob 🔭 today', 'a.md', 3)));
         expect(lines[lines.length - 1]).toEqual('  No horizon');
         expect(setIsLabel).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        ['without a horizon', '- [ ] Buy milk ➕ 2026-03-02'],
+        ['with a horizon', '- [ ] Buy milk 🔭 today ➕ 2026-03-02'],
+    ])('shows when a task %s that is not tracked was created', (_, line) => {
+        HorizonHistory.getInstance().load(loadedFrom(), today);
+        const lines = linesBeforeNailItems(new HorizonMenu(taskAt(line, 'a.md', 3)));
+        expect(lines.slice(-2)).toEqual(['  ---', expect.stringMatching(/^ {2}Created Mon 2 Mar( 2026)?$/)]);
+        expect(setIsLabel).toHaveBeenCalledTimes(1);
     });
 });

@@ -20,6 +20,12 @@ export interface HorizonHistorySettings {
     track: 'horizon' | 'open';
     /** Days late from which a late task's badge shows at each level */
     lateDays: { low: number; medium: number; high: number };
+    /** Which badges rendered tasks get: lateness, or every open task's age (which tracks all open tasks) */
+    badges: 'lateness' | 'age';
+    /** Days old from which an open task gets an age badge */
+    ageBadgeFrom: number;
+    /** Days old from which an age badge shows at each level; younger badges are grey */
+    ageDays: { low: number; medium: number; high: number };
 }
 
 /**
@@ -43,6 +49,9 @@ export function defaultForkSettings(): Required<ForkSettings> {
         horizonHistory: {
             track: 'horizon',
             lateDays: { low: 7, medium: 30, high: 90 },
+            badges: 'lateness',
+            ageBadgeFrom: 14,
+            ageDays: { low: 30, medium: 90, high: 365 },
         },
         horizon: {
             placeholder: true,

@@ -8,8 +8,15 @@ import { getSettings, updateSettings } from '../Config/Settings';
 export type LateDays = HorizonHistorySettings['lateDays'];
 
 /**
- * The horizon history's settings, with defaults for anything missing or invalid. The three day counts are put in
- * ascending order.
+ * Which tasks the history follows with these settings: age badges need every open task.
+ */
+export function trackedTasks(settings: HorizonHistorySettings): HorizonHistorySettings['track'] {
+    return settings.badges === 'age' ? 'open' : settings.track;
+}
+
+/**
+ * The horizon history's settings, with defaults for anything missing or invalid. Each set of three day counts is put
+ * in ascending order.
  */
 export function horizonHistorySettings(): HorizonHistorySettings {
     const t7: unknown = (getSettings() as { t7?: unknown }).t7;
@@ -22,17 +29,26 @@ export function normaliseHorizonHistorySettings(value: unknown): HorizonHistoryS
     const defaults = defaultForkSettings().horizonHistory;
     const given = (typeof value === 'object' && value !== null ? value : {}) as Record<string, unknown>;
     const track = given.track === 'open' || given.track === 'horizon' ? given.track : defaults.track;
-    const lateDays = (typeof given.lateDays === 'object' && given.lateDays !== null ? given.lateDays : {}) as Record<
-        string,
-        unknown
-    >;
+    const badges = given.badges === 'age' || given.badges === 'lateness' ? given.badges : defaults.badges;
+    const ageBadgeFrom = isDayCount(given.ageBadgeFrom) ? given.ageBadgeFrom : defaults.ageBadgeFrom;
+    return {
+        track,
+        lateDays: normaliseDayLevels(given.lateDays, defaults.lateDays),
+        badges,
+        ageBadgeFrom,
+        ageDays: normaliseDayLevels(given.ageDays, defaults.ageDays),
+    };
+}
+
+function normaliseDayLevels(value: unknown, defaults: LateDays): LateDays {
+    const given = (typeof value === 'object' && value !== null ? value : {}) as Record<string, unknown>;
     const [low, medium, high] = (['low', 'medium', 'high'] as const)
         .map((level) => {
-            const days = lateDays[level];
-            return isDayCount(days) ? days : defaults.lateDays[level];
+            const days = given[level];
+            return isDayCount(days) ? days : defaults[level];
         })
         .sort((a, b) => a - b);
-    return { track, lateDays: { low, medium, high } };
+    return { low, medium, high };
 }
 
 /**

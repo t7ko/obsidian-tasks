@@ -53,9 +53,7 @@ export function latenessText(days: number): string {
  */
 export function historyDetails(record: HistoryRecord, today: string, createdDay: string | null = null): string[][] {
     const age =
-        createdDay === null
-            ? `tracked since ${formatDay(record.since, today)}`
-            : `created ${formatDay(createdDay, today)}`;
+        createdDay === null ? `tracked since ${formatDay(record.since, today)}` : createdText(createdDay, today);
     if (record.planned === undefined) {
         return [[age]];
     }
@@ -67,6 +65,13 @@ export function historyDetails(record: HistoryRecord, today: string, createdDay:
         planning.push(`${dayCount(days)} late`);
     }
     return [planning, [pushCount(record.pushes), age]];
+}
+
+/**
+ * `created Mon 2 Mar`, with the year if it is not {@link today}'s.
+ */
+export function createdText(createdDay: string, today: string): string {
+    return `created ${formatDay(createdDay, today)}`;
 }
 
 /**

@@ -1,3 +1,5 @@
+import { addAgeBadge } from '../HorizonHistory/AgeBadge';
+import { horizonHistorySettings } from '../HorizonHistory/HorizonHistorySettings';
 import { horizonPlaceholderShown } from '../HorizonHistory/HorizonPlaceholderSetting';
 import { addLatenessBadge } from '../HorizonHistory/LatenessBadge';
 import { findHorizonToken, horizonAttributeValue, horizonOf } from '../Task/Horizon';
@@ -18,6 +20,9 @@ import { type TaskSaver, defaultTaskSaver, showMenu } from '../ui/Menus/TaskEdit
  * the placeholder. The rendered HTML of a task without a horizon stays exactly as upstream's. If the settings turn the
  * placeholder off (horizon history), the task's `li` gets the class `task-horizon-placeholder-off` instead.
  *
+ * The horizon history adds a lateness badge after a late task's horizon, or, if the settings choose age badges, an
+ * age badge after each open task's description, with or without a horizon. Both open the same menu.
+ *
  * Call this once per task, after its components have been rendered into {@link textSpan}.
  *
  * @param li - the task's list item.
@@ -35,6 +40,15 @@ export function addHorizonMenuTargets(
     const attributeValue = horizonAttributeValue(state);
     // Without a path, as in a canvas card, an edit can't be saved.
     const canSave = task.taskLocation.hasKnownPath;
+
+    // t7: horizon history. Age badges instead of lateness badges. Spec: `fork-features/horizon-history.md`.
+    const showAgeBadges = horizonHistorySettings().badges === 'age';
+    if (showAgeBadges) {
+        const ageBadge = addAgeBadge(li, textSpan, task);
+        if (ageBadge !== null && canSave) {
+            addListeners(ageBadge, task, taskSaver, () => true);
+        }
+    }
 
     if (attributeValue === null) {
         // t7: horizon history. The settings can turn the placeholder off.
@@ -61,6 +75,9 @@ export function addHorizonMenuTargets(
     }
 
     // t7: horizon history. A late task's badge, which opens the same menu. Spec: `fork-features/horizon-history.md`.
+    if (showAgeBadges) {
+        return;
+    }
     const badge = addLatenessBadge(li, horizonSpan, task);
     if (badge !== null && canSave) {
         addListeners(badge, task, taskSaver, () => true);

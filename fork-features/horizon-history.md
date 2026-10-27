@@ -110,6 +110,33 @@ Its text: up to 13 days `1d late` ... `13d late`; up to 59 days `2w late` ... `8
 
 A done or cancelled task's badge says how late it was finished. Hovering over a badge shows the details, for example `Planned for Mon 12 Oct · 10 days late · pushed 3 times · tracked since Fri 2 Oct`. If the task has a created date (➕), it is shown instead of the start of tracking: `created Mon 2 Mar`. A left or right click on the badge opens the horizon menu. A query with `hide horizon` shows no badges.
 
+### Age badges
+
+For a vault that doesn't use horizons, the setting **Badges show** (see [Settings](#settings)) can switch the badges from lateness to age. With `Age`, every open task with a known age gets a badge saying how old it is, with or without a horizon, and the history tracks all open tasks, whatever **Tasks to track** says:
+
+```text
+☐ Renew the passport  5mo old  ⏫ 📅 2026-12-01
+☐ Call the supplier 🔭 today  3w old
+```
+
+A task's age counts from its created date (➕) if it has one, or else from the day the history started tracking it. An open task with neither gets no badge, and neither does one younger than the setting **Age badge from** (14 days by default): fresh tasks need no badge. Done, cancelled and dropped tasks get no age badge. With `Age`, no lateness badges are shown; lateness still shows in the badge's tooltip and the horizon menu, and the lateness queries work as before.
+
+The badge goes right after the task's description, so for a task whose horizon ends the description, right after its `🔭 …`. Its colour follows its own day counts in the settings; by default:
+
+| Days old | Colour |
+| --- | --- |
+| under 14 | no badge |
+| 14 to 29 | grey |
+| 30 to 89 | yellow |
+| 90 to 364 | orange |
+| 365 and more | red |
+
+Its text: up to 13 days `1d old` ... `13d old`; up to 59 days `2w old` ... `8w old` (days ÷ 7, rounded down); up to 729 days `2mo old` ... `24mo old` (days ÷ 30, rounded down); from 730 days `2y old`, `3y old` ... (days ÷ 365, rounded down).
+
+Hovering over the badge shows the details as for a lateness badge, for example `created Mon 2 Mar`, or `Planned for Mon 12 Oct · 10 days late · pushed 3 times · tracked since Fri 2 Oct` for a task with a horizon. A left or right click on the badge opens the horizon menu. A query with `hide horizon` shows no age badges either.
+
+Tasks that existed before all open tasks were tracked count their age from that day, unless they have a created date: they look younger than they are.
+
 ### Menu
 
 The horizon menu of a tracked task with a planned date ends with these lines, followed only by the items of [nails](nails.md):
@@ -126,6 +153,8 @@ The first two lines are labels. For a done or cancelled task they say `finished 
 `Reset lateness`, offered for open tasks with a planned date only, sets the planned date to the last day of the current horizon's period as of today, and the push count to 0. Use it after pushing a task on purpose.
 
 A tracked task without a horizon (opened from the faint 🔭 placeholder) shows one label line instead: `Tracked since Fri 2 Oct`, or `Created Mon 2 Mar` if it has a created date.
+
+A task the history doesn't track, for example one without a horizon while tracking tasks with a horizon, still shows its age if it has a created date (➕): the menu ends with a separator and the label `Created Mon 2 Mar`. Without a created date it shows nothing from the history.
 
 ### Queries
 
@@ -194,16 +223,23 @@ At the end of the plugin's settings, the group **Horizons** has:
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | Horizon placeholder | On | The faint 🔭 at the end of each task without a horizon (see [horizon](horizon.md#menu)). Off: no placeholder, so a horizon is added by typing it; horizons and their badges still show |
-| Tasks to track | Tasks with a horizon | Or `All open tasks` |
-| Yellow badge from | 7 | Days late from which a late task shows a badge, yellow |
-| Orange badge from | 30 | Days late from which it is orange |
-| Red badge from | 90 | Days late from which it is red |
+| Badges show | Lateness | Or `Age` (see [Age badges](#age-badges)) |
+| Tasks to track | Tasks with a horizon | Or `All open tasks`. Only shown with `Lateness`: `Age` tracks all open tasks |
+| Yellow badge from | 7 | Days late from which a late task shows a badge, yellow. Only shown with `Lateness` |
+| Orange badge from | 30 | Days late from which it is orange. Only shown with `Lateness` |
+| Red badge from | 90 | Days late from which it is red. Only shown with `Lateness` |
+| Age badge from | 14 | Days old from which an open task shows an age badge. Only shown with `Age` |
+| Yellow age from | 30 | Days old from which an age badge is yellow instead of grey. Only shown with `Age` |
+| Orange age from | 90 | Days old from which it is orange. Only shown with `Age` |
+| Red age from | 365 | Days old from which it is red. Only shown with `Age` |
 
-The three day counts are whole numbers from 1; they are used in ascending order whatever order they are typed in. Changes apply at once to query results and Reading views. The settings are kept with the plugin's other settings, on each device.
+**Tasks to track** keeps its value while `Age` is chosen, and applies again when switching back to `Lateness`; with `Tasks with a horizon`, that drops the tracked tasks without a horizon. Each mode's day counts are kept while the other mode is chosen. If **Age badge from** is above one of the age colours' day counts, badges start in that colour. The day counts are whole numbers from 1; each mode's three colour counts are used in ascending order whatever order they are typed in. Changes apply at once to query results and Reading views. The settings are kept with the plugin's other settings, on each device.
 
 ### Styling
 
 The badge is `<span class="task-horizon-late" data-task-lateness="low">10d late</span>`, right after the task's `span.task-horizon`. `data-task-lateness` is `low` (yellow), `medium` (orange) or `high` (red), and the task's `li` gets the same attribute. A CSS snippet can use them, for example:
+
+The age badge is `<span class="task-age" data-task-age="medium">5mo old</span>`, right after the task's `span.task-description`. `data-task-age` is `none` (grey), `low` (yellow), `medium` (orange) or `high` (red), and the task's `li` gets the same attribute.
 
 ```css
 /* Tint the whole line of a task late enough for a red badge */
@@ -215,11 +251,16 @@ li.plugin-tasks-list-item[data-task-lateness='high'] {
 .task-horizon-late[data-task-lateness='low'] {
     display: none;
 }
+
+/* No grey age badges */
+.task-age[data-task-age='none'] {
+    display: none;
+}
 ```
 
 ## Requirements
 
-1. The history follows tasks whose status type is TODO, IN_PROGRESS or ON_HOLD (open), DONE or CANCELLED, in files with a known path; other status types are ignored. Open tasks must also pass the global query's filters (a filter that fails with an error lets the task through; placeholders see a query file named `Horizon history.md`); done and cancelled ones need not. When tracking tasks with a horizon, it follows only tasks with a horizon marker (see [horizon](horizon.md)), and a task starts being tracked only when it is open with a valid horizon. When tracking all open tasks, a task starts being tracked when it is first seen open. A change of the global query is applied at once.
+1. The history follows tasks whose status type is TODO, IN_PROGRESS or ON_HOLD (open), DONE or CANCELLED, in files with a known path; other status types are ignored. Open tasks must also pass the global query's filters (a filter that fails with an error lets the task through; placeholders see a query file named `Horizon history.md`); done and cancelled ones need not. When tracking tasks with a horizon, it follows only tasks with a horizon marker (see [horizon](horizon.md)), and a task starts being tracked only when it is open with a valid horizon. When tracking all open tasks, a task starts being tracked when it is first seen open. With **Badges show** set to `Age`, all open tasks are tracked, whatever **Tasks to track** says. A change of the global query is applied at once.
 2. Days are local calendar days. The last day of a horizon's period is as in the table above.
 3. When a tracked task is seen open with a valid horizon, its planned date becomes the earlier of the planned date (if any) and the last day of that horizon's period on the current day. A change from one valid horizon to another whose period, both worked out on the current day, ends later adds one push, if the task had a planned date. An invalid horizon changes neither. An open tracked task seen without a horizon has no planned date and no pushes.
 4. A task that becomes done or cancelled gets its closing date from its done or cancelled date, or the current day if it has none. Its planned date and pushes no longer change. A done or cancelled task that is open again is tracked as before, with the same planned date, pushes and start date.
@@ -228,11 +269,12 @@ li.plugin-tasks-list-item[data-task-lateness='high'] {
 7. An open tracked task that is not linked becomes dropped, with the current day as closing date. Done and cancelled tasks are kept for 35 days after the day the history recorded the closing, dropped tasks until the end of the next day; then they are forgotten.
 8. Files: `.tasks-history/YYYY-MM-DD.json` at the vault root, in the format above, tasks sorted by path and line. Today's file is full if there is no full file yet, or the newest is today's or at least 7 days old; otherwise it holds the tasks whose record, ignoring the line number, differs from the end of the previous file. It is written a few seconds after a change, and when the plugin unloads, and only if its content changed; a day without changes gets no file. Earlier files are never written. Files of version 1, from before change files existed, are read as full files.
 9. At startup, after the vault is loaded, the history reads the newest full file it can parse and the files after it, plus the closed and dropped tasks in the files of the last 35 days before it, then checks the vault for changes made while Obsidian was closed. Unreadable files are skipped, with a message in the developer console.
-10. Badges and menu lines are shown only for tracked, not dropped, tasks, found by file and matching text (the nearest line if several). A badge needs a planned date and at least the days late set for a yellow badge. The rendered HTML of other tasks stays as without this feature.
+10. Badges and menu lines are shown only for tracked, not dropped, tasks, found by file and matching text (the nearest line if several). The one exception is the menu's `Created` line, shown for any task with a valid created date (➕). A badge needs a planned date and at least the days late set for a yellow badge. The rendered HTML of other tasks stays as without this feature.
 11. `Reset lateness` and changes to the settings save what is needed and redraw query results and Reading views.
 12. Before the history is loaded, it changes nothing and no task is tracked.
 13. Settings missing or invalid in the saved settings fall back to the defaults, each on its own.
 14. With **Horizon placeholder** off, a task without a horizon gets no placeholder and no listener for it, in query results and Reading mode; its `li` gets the class `task-horizon-placeholder-off`. Tasks with a horizon, their menus and badges stay the same.
+15. With **Badges show** set to `Age`, in query results and Reading mode: no lateness badge is shown. An open task, not dropped, whose age is at least **Age badge from** days gets an age badge right after its `span.task-description`, with the listeners of the horizon menu if the task can be saved. Its age is the whole days from its valid created date (➕) to the current day, or else from the day the history started tracking it; a task with neither gets no badge. This holds with **Horizon placeholder** on or off. With `Lateness`, the rendered HTML is as without age badges.
 
 Accepted consequences:
 
@@ -253,6 +295,12 @@ Accepted consequences:
 - **Only horizons make plans.** Due, scheduled and start dates are not plans here (the user's choice): vanilla Tasks already queries them. Tasks without a horizon are tracked only for their age.
 - **Removing a horizon ends the plan** when tracking all open tasks, so the planned date always belongs to the horizon the task has now. When tracking tasks with a horizon, removing it drops the task.
 - **`opened`: the created date if there is one, else the start of tracking.** Existing tasks with ➕ keep their real age; tasks without one get the best date the history has. A separate name from Tasks' `created`, which only reads ➕.
+- **The menu shows the created date of untracked tasks** (asked for 2026-10-27): a task's age is useful in the menu with or without a horizon, and a created date needs no history. Tracking all open tasks would also give an age to tasks without ➕, but it is a setting with its own costs (bigger history files), so it stays the user's choice.
+- **Age badges are a mode, not a second badge** (asked for 2026-10-27): the vault without horizons wants every task's age at a glance; the vault with horizons wants only late tasks to stand out. One badge per task keeps lines short, and the tooltip and menu still give the other numbers. Settings are per vault, so each vault picks its own mode.
+- **`Age` tracks all open tasks by itself**: an age badge on only the tasks with a horizon would be no use, and one setting is enough to get ages. **Tasks to track** is kept, not removed, because tracking every task costs bigger history files in a vault that only wants lateness.
+- **No age badge under 14 days (a setting), grey until 30 days** (the user's choice, 2026-10-27): fresh tasks need no badge, so the badges that show point at tasks that have been around a while, and a young one's badge shouldn't draw the eye. **Age badge from** is its own setting, not the grey level of the colour counts, so it can be raised without changing the colours. The age thresholds are separate from the lateness ones, since being a month late and being a month old mean different things.
+- **After the description, not at the end of the line**: next to the text it describes, and where a lateness badge would be for a task whose horizon ends the description.
+- **Only open tasks get an age badge**: the age of a finished task is history, and `opened` queries still show it.
 - **35 days of done and cancelled tasks**: enough for weekly and monthly reviews, and for an unchecked task to get its history back. **Dropped tasks only until the next day**: long enough for cut and paste or undo, short enough that a routine task added again with the same text doesn't inherit an old planned date.
 - **Configurable badge levels with relaxed defaults (7, 30, 90 days)**: the first defaults (1, 7, 28) suit work that moves fast; personal tasks need slower ones. `group by lateness` uses the same levels, plus `Late 1–6 days` below the first.
 - **Settings in the plugin's settings, per device**, in one object `t7` (the fork's settings) with a group at the end of the settings tab. Keeping them in the history folder, shared by every copy of the vault, was considered while the phone might run the fork; it doesn't, so plain settings are simpler.

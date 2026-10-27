@@ -341,24 +341,57 @@
         "render": "[Function]"
       },
       {
+        "name": "Badges show",
+        "desc": "Lateness: late tasks with a horizon get a badge saying how late they are. Age: every open task gets a badge saying how old it is, with or without a horizon, and all open tasks are tracked. For a vault that doesn't use horizons.",
+        "render": "[Function]"
+      },
+      {
         "name": "Tasks to track",
         "desc": "Tasks with a horizon get a planned date and can be late. With all open tasks, the history also records when each task without a horizon was first seen.",
-        "render": "[Function]"
+        "render": "[Function]",
+        "visible": "[Function]"
       },
       {
         "name": "Yellow badge from",
         "desc": "Days late from which a late task shows a yellow badge.",
-        "render": "[Function]"
+        "render": "[Function]",
+        "visible": "[Function]"
       },
       {
         "name": "Orange badge from",
         "desc": "Days late from which the badge is orange.",
-        "render": "[Function]"
+        "render": "[Function]",
+        "visible": "[Function]"
       },
       {
         "name": "Red badge from",
         "desc": "Days late from which the badge is red.",
-        "render": "[Function]"
+        "render": "[Function]",
+        "visible": "[Function]"
+      },
+      {
+        "name": "Age badge from",
+        "desc": "Days old from which an open task shows an age badge, grey until the yellow age.",
+        "render": "[Function]",
+        "visible": "[Function]"
+      },
+      {
+        "name": "Yellow age from",
+        "desc": "Days old from which an age badge is yellow.",
+        "render": "[Function]",
+        "visible": "[Function]"
+      },
+      {
+        "name": "Orange age from",
+        "desc": "Days old from which an age badge is orange.",
+        "render": "[Function]",
+        "visible": "[Function]"
+      },
+      {
+        "name": "Red age from",
+        "desc": "Days old from which an age badge is red.",
+        "render": "[Function]",
+        "visible": "[Function]"
       }
     ],
     "type": "group"

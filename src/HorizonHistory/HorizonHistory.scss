@@ -25,12 +25,43 @@
     }
 }
 
+/* An open task's age badge, right after its description, when the settings choose age badges. */
+.task-age {
+    margin-inline: 0.3em;
+    padding: 0 0.4em;
+    border-radius: var(--radius-s, 4px);
+    font-size: var(--font-smaller, 0.875em);
+    white-space: nowrap;
+    cursor: pointer;
+
+    &[data-task-age='none'] {
+        color: var(--text-muted);
+        background-color: var(--background-modifier-hover);
+    }
+
+    &[data-task-age='low'] {
+        color: var(--color-yellow);
+        background-color: rgba(var(--color-yellow-rgb), 0.15);
+    }
+
+    &[data-task-age='medium'] {
+        color: var(--color-orange);
+        background-color: rgba(var(--color-orange-rgb), 0.15);
+    }
+
+    &[data-task-age='high'] {
+        color: var(--color-red);
+        background-color: rgba(var(--color-red-rgb), 0.15);
+    }
+}
+
 /* No horizon placeholder where the settings turn it off. HorizonMenuTargets.ts adds the class. */
 li.plugin-tasks-list-item.task-horizon-placeholder-off:not([data-task-horizon]) > .tasks-list-text::after {
     content: none;
 }
 
 /* No badge where the query hides horizons */
-.tasks-layout-hide-horizon .task-horizon-late {
+.tasks-layout-hide-horizon .task-horizon-late,
+.tasks-layout-hide-horizon .task-age {
     display: none;
 }

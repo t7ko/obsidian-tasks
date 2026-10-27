@@ -286,7 +286,10 @@ export function observedTasks(
     return observed;
 }
 
-function observedStatus(task: Task): ObservedTask['status'] | null {
+/**
+ * The status the history gives {@link task}, or null for status types it ignores.
+ */
+export function observedStatus(task: Task): ObservedTask['status'] | null {
     switch (task.status.type) {
         case StatusType.TODO:
         case StatusType.IN_PROGRESS:

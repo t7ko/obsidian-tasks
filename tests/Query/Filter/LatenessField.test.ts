@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { resetSettings, updateSettings } from '../../../src/Config/Settings';
 import { HorizonHistory } from '../../../src/HorizonHistory/HorizonHistory';
+import { horizonHistorySettings } from '../../../src/HorizonHistory/HorizonHistorySettings';
 import { addDays, todayAsDay } from '../../../src/HorizonHistory/HorizonPeriod';
 import { LatenessField, latenessGroupNamer } from '../../../src/Query/Filter/LatenessField';
 import { SearchInfo } from '../../../src/Query/SearchInfo';
@@ -118,7 +119,9 @@ describe('grouping by lateness', () => {
     });
 
     it('follows the days-late settings', () => {
-        updateSettings({ t7: { horizonHistory: { track: 'horizon', lateDays: { low: 2, medium: 14, high: 60 } } } });
+        updateSettings({
+            t7: { horizonHistory: { ...horizonHistorySettings(), lateDays: { low: 2, medium: 14, high: 60 } } },
+        });
         expect(new LatenessField().grouper()(tasks.late40, SearchInfo.fromAllTasks([]))).toEqual([
             '%%2%%Late 14–59 days',
         ]);

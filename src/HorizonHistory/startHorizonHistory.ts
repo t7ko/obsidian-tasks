@@ -6,7 +6,7 @@ import { logging } from '../lib/logging';
 import { loadHistory, saveDay } from './HistoryFiles';
 import { globalQueryMatcher } from './globalQueryMatcher';
 import { HorizonHistory } from './HorizonHistory';
-import { horizonHistorySettings } from './HorizonHistorySettings';
+import { horizonHistorySettings, trackedTasks } from './HorizonHistorySettings';
 import { todayAsDay } from './HorizonPeriod';
 import { redrawHorizonHistory } from './redrawHorizonHistory';
 
@@ -39,7 +39,7 @@ export function startHorizonHistory(plugin: Plugin, events: TasksEvents): void {
         if (state !== State.Warm || !history.isLoaded()) {
             return;
         }
-        history.observe(tasks, todayAsDay(), horizonHistorySettings().track, globalQueryMatcher(tasks));
+        history.observe(tasks, todayAsDay(), trackedTasks(horizonHistorySettings()), globalQueryMatcher(tasks));
         saveSoon();
     };
     plugin.registerEvent(events.onCacheUpdate(onCacheUpdate));
