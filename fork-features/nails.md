@@ -44,6 +44,10 @@ In Live Preview and Source mode:
 
 The cursor stays on the same text in all three.
 
+### In the edit modal
+
+The modal's **Actions** section, between Priority and the dates (shared with [multi-step tasks](multi-step-tasks.md)' `Insert 🪜`), has the buttons `Add nail` and `Remove nail`. They add or remove a nail at the start of the description field; the cursor and any selection stay on the same text. `Remove nail` is greyed out while the description has no nails. With access keys on, Alt+W presses `Add nail` (W for warning, the sign's name) and Alt+V `Remove nail`.
+
 ### Queries
 
 ```text
@@ -93,6 +97,7 @@ li.plugin-tasks-list-item[data-task-nails]:not([data-task-nails='1'], [data-task
 8. Filters, sorting and grouping behave as described above. A filter line starting with `nails` that is not understood gives an error listing the valid forms.
 9. The rendered HTML of a task without nails is exactly upstream's.
 10. A new occurrence of a recurring task keeps the nails, as it keeps the rest of the description.
+11. In the edit modal, `Add nail` and `Remove nail` follow `Insert 🪜` in the Actions section. They change the description field as requirement 2 says, as one step in the field's undo history (Ctrl+Z), and leave the focus in the field with the cursor and the selection on the same text; a cursor inside a removed nail goes to the start. `Remove nail` is disabled, with a tooltip saying so, whenever the description has no nails, as typed or changed by the buttons. With the Tasks setting for access keys on, `Add nail` has the access key W, shown as an underlined `(w)` after its text, and `Remove nail` the access key V, underlined in its text.
 
 Accepted consequences:
 
@@ -116,6 +121,7 @@ Accepted consequences:
 - **Filter wording as upstream's priority filter** (`is`, `above`, `below`, `not`).
 - **New occurrences keep the nails**, as vanilla Tasks does. Rejected: resetting them, as multi-step tasks reset their steps, which would make a task's next occurrence differ depending on the device that completed it.
 - **No effect on urgency**: urgency is upstream's; changing it in the fork would sort tasks differently on devices without it.
+- **Buttons in the edit modal** (added 2026-10-27, asked for by the user), in the section that held only `Insert 🪜`, renamed from Steps to Actions for them. The modal's description is a plain text field without Tasks' auto-suggest, so the buttons are the way to nail a task there. They change the field, not the task, so Apply or Cancel decides as for typed text. Access keys: no letter of `Add nail` is free in the modal, so W, for warning; V is the free letter of `Remove nail`.
 - **English strings only**, like the other fork menus; no i18n keys.
 - **Vanilla Tasks compatibility**: safe for notes, since nails are ordinary description text. Query blocks using the new instructions show an error there (accepted by the user).
-- **Code layout for cheap rebases**: new files `src/Task/Nails.ts`, `src/ui/EditInstructions/NailInstructions.ts`, `src/ui/Menus/NailMenu.ts`, `src/Renderer/NailMenuTargets.ts`, `src/Query/Filter/NailsField.ts`, `src/Suggestor/NailSuggestion.ts`, `src/Commands/NailCommands.ts`. Upstream files get an import and one line each in `FilterParser.ts`, `TaskLineRenderer.renderTaskLine`, `Suggestor.ts` and `main.ts`, and sample lines in `tests/Query/Query.test.ts`. The priority and horizon menus get the items in the fork's own files.
+- **Code layout for cheap rebases**: new files `src/Task/Nails.ts`, `src/ui/EditInstructions/NailInstructions.ts`, `src/ui/Menus/NailMenu.ts`, `src/Renderer/NailMenuTargets.ts`, `src/Query/Filter/NailsField.ts`, `src/Suggestor/NailSuggestion.ts`, `src/Commands/NailCommands.ts`. Upstream files get an import and one line each in `FilterParser.ts`, `TaskLineRenderer.renderTaskLine`, `Suggestor.ts` and `main.ts`, and sample lines in `tests/Query/Query.test.ts`. The priority and horizon menus get the items in the fork's own files, and the edit modal's buttons are in multi-step tasks' `src/ui/TaskModalActions.ts`, so no upstream file changes for them.

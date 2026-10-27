@@ -1,5 +1,5 @@
 /**
- * Fork feature: multi-step tasks. Spec: fork-features/multi-step-tasks.md
+ * Fork features: multi-step tasks and nails. Specs: fork-features/multi-step-tasks.md, fork-features/nails.md
  */
 import { fireEvent, render } from '@testing-library/svelte';
 import moment from 'moment';
@@ -215,5 +215,105 @@ describe('TaskModalActions - inserting the marker', () => {
         await fireEvent.click(button);
 
         expect(description.value).toEqual('Renew passport 🪜 fill form');
+    });
+});
+
+describe('TaskModalActions - nails', () => {
+    function nailButtons(container: HTMLElement) {
+        const add = container.querySelector('#add-nail') as HTMLButtonElement;
+        const remove = container.querySelector('#remove-nail') as HTMLButtonElement;
+        expect(add).not.toBeNull();
+        expect(remove).not.toBeNull();
+        return { add, remove };
+    }
+
+    it('should come after Insert 🪜', () => {
+        const { container } = renderModal('- [ ] Ship it');
+
+        const buttons = Array.from(container.querySelectorAll('.tasks-modal-actions button')).map((b) => b.id);
+        expect(buttons).toEqual(['steps', 'add-nail', 'remove-nail']);
+    });
+
+    it('should add nails at the start of the description and keep the cursor on the same text', async () => {
+        const { container, description, apply } = renderModal('- [ ] Ship it 📅 2026-11-01');
+        const { add } = nailButtons(container);
+        description.setSelectionRange(5, 5);
+
+        await fireEvent.click(add);
+        expect(withCursor(description)).toEqual('⚠️ Ship |it');
+        expect(description.ownerDocument.activeElement).toBe(description);
+
+        await fireEvent.click(add);
+        expect(withCursor(description)).toEqual('⚠️⚠️ Ship |it');
+        expect(await apply()).toEqual(['- [ ] ⚠️⚠️ Ship it 📅 2026-11-01']);
+    });
+
+    it('should keep a selection on the same text', async () => {
+        const { container, description } = renderModal('- [ ] Ship it');
+        description.setSelectionRange(0, 4);
+
+        await fireEvent.click(nailButtons(container).add);
+
+        const { value, selectionStart, selectionEnd } = description;
+        expect(value.slice(selectionStart, selectionEnd)).toEqual('Ship');
+    });
+
+    it('should remove one nail at a time, then the space after the last', async () => {
+        const { container, description, apply } = renderModal('- [ ] ⚠️⚠️ Ship it');
+        const { remove } = nailButtons(container);
+        description.setSelectionRange(description.value.length, description.value.length);
+
+        await fireEvent.click(remove);
+        expect(withCursor(description)).toEqual('⚠️ Ship it|');
+
+        await fireEvent.click(remove);
+        expect(withCursor(description)).toEqual('Ship it|');
+        expect(await apply()).toEqual(['- [ ] Ship it']);
+    });
+
+    it('should move a cursor inside the removed nail to the start', async () => {
+        const { container, description } = renderModal('- [ ] ⚠️ Ship it');
+        description.setSelectionRange(1, 1);
+
+        await fireEvent.click(nailButtons(container).remove);
+
+        expect(withCursor(description)).toEqual('|Ship it');
+    });
+
+    it('should grey Remove nail out while the description has no nails', async () => {
+        const { container, description } = renderModal('- [ ] Ship it ⚠️');
+        const { add, remove } = nailButtons(container);
+        expect(add.disabled).toEqual(false);
+        expect(remove.disabled).toEqual(true);
+        expect(remove.title).toEqual('The description has no ⚠️ at its start');
+
+        await fireEvent.click(add);
+        expect(remove.disabled).toEqual(false);
+        expect(remove.title).toEqual('Remove a ⚠️ from the start of the description');
+
+        await fireEvent.input(description, { target: { value: 'Ship it' } });
+        expect(remove.disabled).toEqual(true);
+    });
+
+    it('should have the access keys W and V when access keys are on', () => {
+        updateSettings({ provideAccessKeys: true });
+        const { container } = renderModal('- [ ] Ship it');
+        const { add, remove } = nailButtons(container);
+
+        expect(add.innerHTML).toEqual('Add nail (<span class="accesskey">w</span>)');
+        expect(add.accessKey).toEqual('w');
+        expect(remove.innerHTML).toEqual('Remo<span class="accesskey">v</span>e nail');
+        expect(remove.accessKey).toEqual('v');
+    });
+
+    it('should have no access keys when access keys are off', () => {
+        updateSettings({ provideAccessKeys: false });
+        const { container } = renderModal('- [ ] Ship it');
+        const { add, remove } = nailButtons(container);
+
+        expect(add.innerHTML).toEqual('Add nail');
+        expect(add.hasAttribute('accesskey')).toEqual(false);
+        expect(remove.innerHTML).toEqual('Remove nail');
+        expect(remove.hasAttribute('accesskey')).toEqual(false);
     });
 });

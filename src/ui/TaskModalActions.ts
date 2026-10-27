@@ -1,16 +1,21 @@
 import { getSettings } from '../Config/Settings';
 import { MULTI_STEP_MARKER, stepsMarkerInsertion } from '../Task/MultiStepTask';
+import { NAIL_MARKER, addNail, nailCount, removeNail } from '../Task/Nails';
 
 /**
- * Fork feature: multi-step tasks. Spec: fork-features/multi-step-tasks.md
+ * Fork features: multi-step tasks and nails. Specs: fork-features/multi-step-tasks.md, fork-features/nails.md
  *
  * An Actions section in the edit modal, between Priority and the dates, with buttons that change the
- * description: `Insert 🪜` inserts {@link MULTI_STEP_MARKER}. TaskModal adds it to the rendered form, so that
- * EditTask.svelte and its approval files stay upstream's.
+ * description: `Insert 🪜` inserts {@link MULTI_STEP_MARKER}, `Add nail` and `Remove nail` add and remove a
+ * {@link NAIL_MARKER}. TaskModal adds it to the rendered form, so that EditTask.svelte and its approval files
+ * stay upstream's.
  */
 
 const STEPS_ENABLED_TITLE = `Insert ${MULTI_STEP_MARKER} into the description at the cursor, then type the steps separated by //`;
 const STEPS_DISABLED_TITLE = `The description already has ${MULTI_STEP_MARKER}`;
+const ADD_NAIL_TITLE = `Add a ${NAIL_MARKER} at the start of the description: the task was asked for again`;
+const REMOVE_NAIL_ENABLED_TITLE = `Remove a ${NAIL_MARKER} from the start of the description`;
+const REMOVE_NAIL_DISABLED_TITLE = `The description has no ${NAIL_MARKER} at its start`;
 
 /**
  * Add the Actions section and the line after it just before the first dates section of the edit form
@@ -38,6 +43,20 @@ export function addActionsSection(container: HTMLElement) {
         const hasMarker = text.includes(MULTI_STEP_MARKER);
         stepsButton.disabled = hasMarker;
         stepsButton.title = hasMarker ? STEPS_DISABLED_TITLE : STEPS_ENABLED_TITLE;
+    });
+
+    // Access key W for warning, the sign's name: "Add nail" has no free letter.
+    const addNailButton = addButton(buttons, 'add-nail', 'Add nail', accessKey('w'), () =>
+        changeStart(description, addNail),
+    );
+    addNailButton.title = ADD_NAIL_TITLE;
+    const removeNailButton = addButton(buttons, 'remove-nail', 'Remove nail', accessKey('v'), () =>
+        changeStart(description, removeNail),
+    );
+    onDescriptionChange(description, (text) => {
+        const hasNails = nailCount(text) > 0;
+        removeNailButton.disabled = !hasNails;
+        removeNailButton.title = hasNails ? REMOVE_NAIL_ENABLED_TITLE : REMOVE_NAIL_DISABLED_TITLE;
     });
 
     const line = createEl('hr');
@@ -107,6 +126,28 @@ function insertStepsMarker(field: HTMLTextAreaElement) {
     const { from, to, text, cursor } = stepsMarkerInsertion(field.value, field.selectionStart, field.selectionEnd);
     replaceInField(field, from, to, text);
     field.setSelectionRange(cursor, cursor);
+}
+
+/**
+ * Apply {@link change}, which adds or removes text at the start only, to the description field, keeping
+ * the cursor and the selection on the same text.
+ */
+function changeStart(field: HTMLTextAreaElement, change: (text: string) => string) {
+    const before = field.value;
+    const after = change(before);
+    if (after === before) {
+        return;
+    }
+
+    // The text after the changed start is the same in both.
+    const unchanged = Math.min(before.length, after.length);
+    const to = before.length - unchanged;
+    const text = after.slice(0, after.length - unchanged);
+    const moved = (position: number) => (position < to ? text.length : position - to + text.length);
+
+    const { selectionStart, selectionEnd } = field;
+    replaceInField(field, 0, to, text);
+    field.setSelectionRange(moved(selectionStart), moved(selectionEnd));
 }
 
 /**
