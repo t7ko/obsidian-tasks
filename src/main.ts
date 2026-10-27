@@ -29,6 +29,7 @@ import { recurrenceDeleteOnCompletionExtension } from './Obsidian/RecurrenceDele
 import { registerSplitTaskCommand } from './Commands/SplitTaskCommand';
 import { editorStatusMenuExtension } from './Obsidian/EditorStatusMenuExtension';
 import { registerCompletePermanentlyCommand } from './Commands/CompletePermanentlyCommand';
+import { registerJumpAnchorCommands } from './Commands/JumpAnchorCommands';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -94,6 +95,8 @@ export default class TasksPlugin extends Plugin {
         this.registerEditorExtension(editorStatusMenuExtension());
         // t7: complete permanently
         registerCompletePermanentlyCommand(this);
+        // t7: jump anchor
+        registerJumpAnchorCommands(this);
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
