@@ -14,6 +14,7 @@ A quick manual check after rebasing the fork onto a new upstream release, once t
 10. **🏁 delete for typed recurrences** ([spec](recurrence-delete-on-completion.md)). In the Tasks settings, turn on **Recurring tasks > Add 🏁 delete to typed recurrences** (note whether it was on). On a new line type `- [ ] smoke rec` and pick `🔁 recurring (repeat)` from Tasks' popup: `🏁 delete` appears after the cursor at once. Pick `every day`: the line reads `- [ ] smoke 🔁 every day 🏁 delete`. On the next line type `- [ ] smoke 2 rec`, pick `🔁 recurring (repeat)`, then press Backspace until the 🔁 is gone: `🏁 delete` goes with it. Delete the lines and set the setting back as it was.
 11. **Recurrence suggestions** ([spec](recurrence-suggestions.md)). On a new line type `- [ ] smoke 🔁 every week wh`: the first suggestion in Tasks' popup is `every week when done`; pick it. Click right after `week` in the line: the popup's first item is `⏎`, not `✅ every week`. Delete the line.
 12. **`block` finds depends on** ([spec](block-finds-depends-on.md)). On a new line type `- [ ] smoke block`: the first suggestion in Tasks' popup is `⛔ depends on id`; pick it: the line reads `- [ ] smoke ⛔`. Delete the line.
+13. **Split tasks** ([spec](split-tasks.md)). On a new line type `- [ ] smoke 🪜 one // two 📅 2026-12-01`. Right-click the line and choose `Split task`: it becomes `- [ ] smoke: one 📅 2026-12-01` and `- [ ] smoke: two 📅 2026-12-01`. Delete the lines.
 
 If a step fails, go back to the last good build before investigating.
 

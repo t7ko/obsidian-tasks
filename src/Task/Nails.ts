@@ -44,6 +44,13 @@ export function nailCount(text: string): number {
 }
 
 /**
+ * The nails at the start of {@link text}, with the whitespace between and after them; empty if it has none.
+ */
+export function leadingNails(text: string): string {
+    return LEADING_NAILS.exec(text)?.[0] ?? '';
+}
+
+/**
  * {@link text} with one more nail at its start. The first nail is followed by a space; later ones join the others.
  */
 export function addNail(text: string): string {

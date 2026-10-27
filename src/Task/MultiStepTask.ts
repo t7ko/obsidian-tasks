@@ -97,6 +97,46 @@ function findStepText(description: string, segmentStart: number, segmentEnd: num
     return { start, end: start + text.length, done };
 }
 
+export interface StepSegment {
+    /** The segment without surrounding whitespace, and without the `~~` of a done step */
+    text: string;
+    done: boolean;
+}
+
+/**
+ * The segments of {@link text} between step separators, in order, leaving out those holding only whitespace.
+ * A segment is done as a step is: its text, without trailing tags and horizon, is struck through.
+ *
+ * Used by split tasks (t7 fork feature, spec: fork-features/split-tasks.md), on the text after the marker
+ * or on a whole description.
+ */
+export function stepSegments(text: string): StepSegment[] {
+    const segments: StepSegment[] = [];
+    const addSegment = (segmentStart: number, segmentEnd: number) => {
+        const segment = text.slice(segmentStart, segmentEnd).trim();
+        if (segment === '') {
+            return;
+        }
+        const step = findStepText(text, segmentStart, segmentEnd);
+        if (step?.done) {
+            const unstruck = text.slice(step.start + STRIKE.length, step.end - STRIKE.length).trim();
+            segments.push({ text: unstruck + text.slice(step.end, segmentEnd).trimEnd(), done: true });
+        } else {
+            segments.push({ text: segment, done: false });
+        }
+    };
+
+    const separator = new RegExp(STEP_SEPARATOR.source, 'g');
+    let segmentStart = 0;
+    let match: RegExpExecArray | null;
+    while ((match = separator.exec(text)) !== null) {
+        addSegment(segmentStart, match.index);
+        segmentStart = match.index + match[0].length;
+    }
+    addSegment(segmentStart, text.length);
+    return segments;
+}
+
 function strike(description: string, step: Step) {
     const text = description.slice(step.start, step.end);
     return description.slice(0, step.start) + STRIKE + text + STRIKE + description.slice(step.end);

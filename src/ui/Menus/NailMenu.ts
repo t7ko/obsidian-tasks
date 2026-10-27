@@ -1,10 +1,14 @@
 import type { Task } from '../../Task/Task';
 import { nailInstructions, nailInstructionsAfterSeparator } from '../EditInstructions/NailInstructions';
+import { splitTaskInstructionsAfterSeparator } from '../EditInstructions/SplitTaskInstruction';
 import { PriorityMenu } from './PriorityMenu';
 import { TaskEditingMenu, type TaskSaver, defaultTaskSaver } from './TaskEditingMenu';
 
 /**
  * t7 fork feature: a Menu for adding or removing a Task's nails. Spec: `fork-features/nails.md`.
+ *
+ * It is the menu of a right-click on a rendered task's text, so it also ends with `Split task` when the task can be
+ * split (t7 fork feature: split tasks, spec: `fork-features/split-tasks.md`).
  */
 export class NailMenu extends TaskEditingMenu {
     /**
@@ -16,6 +20,7 @@ export class NailMenu extends TaskEditingMenu {
         super(taskSaver);
 
         this.addItemsForInstructions(nailInstructions(task), task);
+        this.addItemsForInstructions(splitTaskInstructionsAfterSeparator(task), task);
     }
 }
 

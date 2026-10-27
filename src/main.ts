@@ -26,6 +26,7 @@ import { startHorizonHistory } from './HorizonHistory/startHorizonHistory';
 import { registerNailCommands } from './Commands/NailCommands';
 import { editorDateMenuExtension } from './Obsidian/EditorDateMenuExtension';
 import { recurrenceDeleteOnCompletionExtension } from './Obsidian/RecurrenceDeleteOnCompletionExtension';
+import { registerSplitTaskCommand } from './Commands/SplitTaskCommand';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -85,6 +86,8 @@ export default class TasksPlugin extends Plugin {
         this.registerEditorExtension(editorDateMenuExtension());
         // t7: 🏁 delete for typed recurrences
         this.registerEditorExtension(recurrenceDeleteOnCompletionExtension());
+        // t7: split tasks
+        registerSplitTaskCommand(this);
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });

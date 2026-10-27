@@ -17,3 +17,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [🏁 delete for typed recurrences](recurrence-delete-on-completion.md) | Optionally, a 🔁 typed into a task in the editor brings `🏁 delete` with it, so completing the task leaves only its next occurrence |
 | [Recurrence suggestions that keep what you typed](recurrence-suggestions.md) | Auto-suggest offers `<rule> when done`, and its ✅ suggestion no longer replaces typed words it didn't understand |
 | [`block` finds depends on](block-finds-depends-on.md) | Typing `block` (or `blo` ... `blocked`) in a task brings up auto-suggest's `⛔ depends on id`, as `dep` does |
+| [Split tasks](split-tasks.md) | `Split task` in the context menus turns a task with parts separated by `//`, such as a multi-step task's steps, into one task per part, keeping its fields |
