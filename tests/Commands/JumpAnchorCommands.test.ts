@@ -51,14 +51,18 @@ describe('newEntryPrefix', () => {
         ['\t\t* [/] Nested ^jump-anchor', '\t\t* [ ] '],
         ['> + [ ] Quoted ^jump-anchor', '> + [ ] '],
         ['-   [ ] Wide ^jump-anchor', '-   [ ] '],
-        ['- Plain ^jump-anchor', '- '],
         ['9. [ ] Numbered ^jump-anchor', '10. [ ] '],
-        ['  3) Numbered ^jump-anchor', '  4) '],
-        ['Some text ^jump-anchor', ''],
-        ['  > Quote ^jump-anchor', '  > '],
+        ['  3) [-] Numbered ^jump-anchor', '  4) [ ] '],
     ])('should continue "%s" with "%s"', (line: string, expected: string) => {
         expect(newEntryPrefix(line)).toEqual(expected);
     });
+
+    it.each(['- Plain ^jump-anchor', '3. Numbered ^jump-anchor', 'Some text ^jump-anchor', '## Heading ^jump-anchor'])(
+        'should not continue "%s", which has no checkbox',
+        (line: string) => {
+            expect(newEntryPrefix(line)).toBeNull();
+        },
+    );
 });
 
 describe('goToJumpAnchor', () => {
@@ -86,6 +90,19 @@ describe('goToJumpAnchor', () => {
         expect(state.cursor).toEqual({ line: 3, ch: 6 });
         expect(state.scrolledTo).toEqual(state.cursor);
     });
+
+    it.each(['- Plain ^jump-anchor', 'Some text ^jump-anchor'])(
+        'should go to the anchor "%s" without a checkbox, adding nothing',
+        (anchor: string) => {
+            const lines = ['# Heading', anchor, 'next'];
+            const { editor, state } = fakeEditor([...lines]);
+            goToJumpAnchor(editor, true);
+
+            expect(state.lines).toEqual(lines);
+            expect(state.cursor).toEqual({ line: 1, ch: anchor.length });
+            expect(state.scrolledTo).toEqual(state.cursor);
+        },
+    );
 
     it('should leave the note and cursor alone without an anchor', () => {
         const lines = ['- [ ] Call Bob', '- [ ] Older item'];

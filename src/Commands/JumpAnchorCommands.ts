@@ -27,12 +27,13 @@ export function registerJumpAnchorCommands(plugin: Plugin): void {
 
 const jumpAnchorRegex = /\s\^jump-anchor\s*$/;
 
-// Indentation (with the '>' of quotes), list marker, the spaces after it, and an optional checkbox.
-const listItemRegex = /^([\s>]*)(?:([-*+])|([0-9]+)([.)]))( +)(\[.\])?/u;
+// Indentation (with the '>' of quotes), list marker and the spaces after it, of a checkbox item.
+const checkboxItemRegex = /^([\s>]*)(?:([-*+])|([0-9]+)([.)]))( +)\[.\]/u;
 
 /**
  * Put the cursor at the end of the first line with `^jump-anchor` and scroll to it. With {@link newEntry}, then start
- * a new line under it, as Enter would. Without an anchor, show a notice and leave the cursor alone.
+ * a new line under it, as Enter would, if it is a checkbox item; otherwise show a notice. Without an anchor, show a
+ * notice and leave the cursor alone.
  */
 export function goToJumpAnchor(editor: Editor, newEntry: boolean): void {
     const lineNumber = findJumpAnchor(editor);
@@ -45,8 +46,12 @@ export function goToJumpAnchor(editor: Editor, newEntry: boolean): void {
     let cursor: EditorPosition = { line: lineNumber, ch: line.length };
     if (newEntry) {
         const prefix = newEntryPrefix(line);
-        editor.replaceRange('\n' + prefix, cursor);
-        cursor = { line: lineNumber + 1, ch: prefix.length };
+        if (prefix === null) {
+            new Notice('The ^jump-anchor line has no checkbox: no entry added');
+        } else {
+            editor.replaceRange('\n' + prefix, cursor);
+            cursor = { line: lineNumber + 1, ch: prefix.length };
+        }
     }
     editor.setCursor(cursor);
     editor.scrollIntoView({ from: cursor, to: cursor }, true);
@@ -66,15 +71,15 @@ export function findJumpAnchor(editor: Editor): number | null {
 }
 
 /**
- * The start of the line Enter would give after {@link anchorLine}: the same indentation and list marker (the next
- * number for a numbered item), and an empty checkbox if the line has one.
+ * The start of the line Enter would give after the checkbox item {@link anchorLine}: the same indentation and list
+ * marker (the next number for a numbered item), and an empty checkbox. Null if the line is not a checkbox item.
  */
-export function newEntryPrefix(anchorLine: string): string {
-    const match = anchorLine.match(listItemRegex);
+export function newEntryPrefix(anchorLine: string): string | null {
+    const match = anchorLine.match(checkboxItemRegex);
     if (match === null) {
-        return anchorLine.match(/^[\s>]*/)?.[0] ?? '';
+        return null;
     }
-    const [, indentation, bullet, number, punctuation, spaces, checkbox] = match;
+    const [, indentation, bullet, number, punctuation, spaces] = match;
     const marker = bullet ?? `${Number(number) + 1}${punctuation}`;
-    return indentation + marker + spaces + (checkbox ? '[ ] ' : '');
+    return indentation + marker + spaces + '[ ] ';
 }
