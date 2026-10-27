@@ -18,3 +18,4 @@ After a rebase, run the [smoke test](smoke-test.md): one quick manual step per f
 | [Recurrence suggestions that keep what you typed](recurrence-suggestions.md) | Auto-suggest offers `<rule> when done`, and its ✅ suggestion no longer replaces typed words it didn't understand |
 | [`block` finds depends on](block-finds-depends-on.md) | Typing `block` (or `blo` ... `blocked`) in a task brings up auto-suggest's `⛔ depends on id`, as `dep` does |
 | [Split tasks](split-tasks.md) | `Split task` in the context menus turns a task with parts separated by `//`, such as a multi-step task's steps, into one task per part, keeping its fields |
+| [Status menu in the editor](editor-status-menu.md) | A right-click on a task's checkbox in the editor opens the status menu of query results and Reading mode |

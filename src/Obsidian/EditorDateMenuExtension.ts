@@ -155,7 +155,7 @@ export function onEditorContextMenu(event: MouseEvent, view: EditorView): boolea
  * Whether the mouse is over the text from `from` to `to`. `posAtCoords` alone can't tell: it also gives a position for
  * the empty space after the end of a line.
  */
-function isMouseOverText(view: EditorView, event: MouseEvent, pos: number, from: number, to: number): boolean {
+export function isMouseOverText(view: EditorView, event: MouseEvent, pos: number, from: number, to: number): boolean {
     if (pos < from || pos > to) {
         return false;
     }
@@ -227,8 +227,14 @@ function openDatePicker(
  * @param view
  * @param lineNumber - 1-based, as in CodeMirror.
  * @param lineText - the line's text when the menu opened.
+ * @param notChangedNotice - the notice shown when the line is not found.
  */
-export function editorTaskSaver(view: EditorView, lineNumber: number, lineText: string): TaskSaver {
+export function editorTaskSaver(
+    view: EditorView,
+    lineNumber: number,
+    lineText: string,
+    notChangedNotice = 'Tasks: the task line has changed, so the date was not changed.',
+): TaskSaver {
     const path = filePath(view);
     return async (originalTask: Task, newTasks: Task | Task[]) => {
         const tasks = Array.isArray(newTasks) ? newTasks : [newTasks];
@@ -238,7 +244,7 @@ export function editorTaskSaver(view: EditorView, lineNumber: number, lineText: 
         }
         const line = filePath(view) === path ? findLine(view.state.doc, lineNumber, lineText) : null;
         if (line === null) {
-            new Notice('Tasks: the task line has changed, so the date was not changed.');
+            new Notice(notChangedNotice);
             return;
         }
         replaceLine(view, line, tasks);

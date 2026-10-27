@@ -32,7 +32,7 @@ becomes
 - [ ] call Bob 📅 2026-10-30
 ```
 
-- **Where:** `Split task` is in the context menu of a task line in the editor (Live Preview and Source mode), and at the end of the menu of a right-click on a rendered task's text (query results and Reading mode, the menu with `Add nail`). It is also a command, `Split task`, for the task on the cursor's line (command palette, under Tasks; a hotkey can be set for it). It is offered only for a task with at least two parts.
+- **Where:** `Split task` is in the context menu of a task line in the editor (Live Preview and Source mode; a right-click on the task's dates or checkbox opens their own menus instead), and at the end of the menu of a right-click on a rendered task's text (query results and Reading mode, the menu with `Add nail`). It is also a command, `Split task`, for the task on the cursor's line (command palette, under Tasks; a hotkey can be set for it). It is offered only for a task with at least two parts.
 - The new tasks replace the original line, in order, with its indentation and list marker. Lines nested under the task end up under the last new task.
 - Every new task copies the original's status and all its fields: dates, priority, recurrence, on completion, depends on (⛔). Two fields must stay unique, so they go to one task each:
   - The id (🆔) goes to the last new task that is not done (the last task, if all are done). Tasks waiting for the original (`⛔ abc123`) wait for that part, so they stay blocked until the work is finished, and Tasks doesn't ignore their `⛔` as it would for an id that no longer exists.

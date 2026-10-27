@@ -15,6 +15,7 @@ A quick manual check after rebasing the fork onto a new upstream release, once t
 11. **Recurrence suggestions** ([spec](recurrence-suggestions.md)). On a new line type `- [ ] smoke 🔁 every week wh`: the first suggestion in Tasks' popup is `every week when done`; pick it. Click right after `week` in the line: the popup's first item is `⏎`, not `✅ every week`. Delete the line.
 12. **`block` finds depends on** ([spec](block-finds-depends-on.md)). On a new line type `- [ ] smoke block`: the first suggestion in Tasks' popup is `⛔ depends on id`; pick it: the line reads `- [ ] smoke ⛔`. Delete the line.
 13. **Split tasks** ([spec](split-tasks.md)). On a new line type `- [ ] smoke 🪜 one // two 📅 2026-12-01`. Right-click the line and choose `Split task`: it becomes `- [ ] smoke: one 📅 2026-12-01` and `- [ ] smoke: two 📅 2026-12-01`. Delete the lines.
+14. **Status menu in the editor** ([spec](editor-status-menu.md)). On a new line type `- [ ] smoke` and click elsewhere in the note. In Live Preview, right-click the checkbox: the menu lists `Change status to: [ ] Todo` (checked) and the other statuses; choose `Change status to: [/] In Progress`: the line reads `- [/] smoke`. Switch to Source mode, right-click the `[/]` and choose `Change status to: [x] Done`: the line gets a done date. Press Ctrl+Z: it reads `- [/] smoke` again. Switch back to Live Preview and delete the line.
 
 If a step fails, go back to the last good build before investigating.
 

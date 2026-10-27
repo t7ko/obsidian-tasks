@@ -27,6 +27,7 @@ import { registerNailCommands } from './Commands/NailCommands';
 import { editorDateMenuExtension } from './Obsidian/EditorDateMenuExtension';
 import { recurrenceDeleteOnCompletionExtension } from './Obsidian/RecurrenceDeleteOnCompletionExtension';
 import { registerSplitTaskCommand } from './Commands/SplitTaskCommand';
+import { editorStatusMenuExtension } from './Obsidian/EditorStatusMenuExtension';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -88,6 +89,8 @@ export default class TasksPlugin extends Plugin {
         this.registerEditorExtension(recurrenceDeleteOnCompletionExtension());
         // t7: split tasks
         registerSplitTaskCommand(this);
+        // t7: editor status menu
+        this.registerEditorExtension(editorStatusMenuExtension());
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
