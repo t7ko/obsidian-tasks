@@ -30,7 +30,7 @@ The editor keeps its own context menu:
 ## Requirements
 
 - The checkbox is the one at the start of the task, after the indentation (including `>` of quotes) and the list marker. A `[ ]` further along the line is description text.
-- The menu has no nail or `Split task` items: it is the query results' status menu, and that menu has none. They stay in the editor's context menu on the rest of the line.
+- The menu has no nail or `Split task` items: it is the query results' status menu, and that menu has none. They stay in the editor's context menu on the rest of the line. Like the query results' status menu, it ends with [`Complete permanently`](complete-permanently.md) for an open recurring task.
 - The line written is the one the menu was opened on, when it still has the same number and text. If lines were added or removed above it, it is the only line with the same text. Otherwise (the line was edited while the menu was open, or several lines match) nothing is written and a notice says so.
 - No setting.
 

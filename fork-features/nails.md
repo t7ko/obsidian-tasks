@@ -23,7 +23,7 @@ A right-click anywhere on a task opens this menu:
   Remove nail
 ```
 
-`Remove nail` is offered only for a task with nails. For a task that can be [split](split-tasks.md), the menu ends with a separator and `Split task`. The places that have menus of their own keep them: the checkbox (status), dates, the priority and its placeholder, the horizon and its placeholder, the postpone button. Links, tags and images keep Obsidian's menus, selected text keeps the menu with Copy, and a list item nested under the task is left alone. A left click does nothing new.
+`Remove nail` is offered only for a task with nails. For a task that can be [split](split-tasks.md), the menu ends with a separator and `Split task`; for an open recurring task, with a separator and [`Complete permanently`](complete-permanently.md). The places that have menus of their own keep them: the checkbox (status), dates, the priority and its placeholder, the horizon and its placeholder, the postpone button. Links, tags and images keep Obsidian's menus, selected text keeps the menu with Copy, and a list item nested under the task is left alone. A left click does nothing new.
 
 The priority menu and the horizon menu end with a separator and the same items:
 

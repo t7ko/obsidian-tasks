@@ -151,7 +151,10 @@ function withGlobalFilter(description: string): string {
     return nails + globalFilter.prependTo(description.slice(nails.length));
 }
 
-function doneStatus(): Status {
+/**
+ * The first registered status of type DONE, or {@link Status.DONE} if none is registered.
+ */
+export function doneStatus(): Status {
     return (
         StatusRegistry.getInstance().registeredStatuses.find((status) => status.type === StatusType.DONE) ?? Status.DONE
     );

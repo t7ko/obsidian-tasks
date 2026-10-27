@@ -28,6 +28,7 @@ import { editorDateMenuExtension } from './Obsidian/EditorDateMenuExtension';
 import { recurrenceDeleteOnCompletionExtension } from './Obsidian/RecurrenceDeleteOnCompletionExtension';
 import { registerSplitTaskCommand } from './Commands/SplitTaskCommand';
 import { editorStatusMenuExtension } from './Obsidian/EditorStatusMenuExtension';
+import { registerCompletePermanentlyCommand } from './Commands/CompletePermanentlyCommand';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -91,6 +92,8 @@ export default class TasksPlugin extends Plugin {
         registerSplitTaskCommand(this);
         // t7: editor status menu
         this.registerEditorExtension(editorStatusMenuExtension());
+        // t7: complete permanently
+        registerCompletePermanentlyCommand(this);
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
