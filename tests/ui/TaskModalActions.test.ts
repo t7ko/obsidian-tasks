@@ -10,7 +10,7 @@ import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import type { Task } from '../../src/Task/Task';
 import EditTask from '../../src/ui/EditTask.svelte';
 import { settingsStore } from '../../src/ui/SettingsStore';
-import { addStepsMarkerSection } from '../../src/ui/StepsMarkerSection';
+import { addActionsSection } from '../../src/ui/TaskModalActions';
 
 window.moment = moment;
 
@@ -24,7 +24,7 @@ function hidePriority() {
 }
 
 /**
- * Render the edit form for {@link line} as TaskModal does: the Svelte component, then the Steps section.
+ * Render the edit form for {@link line} as TaskModal does: the Svelte component, then the Actions section.
  */
 function renderModal(line: string) {
     const task = taskFromLine({ line, path: '' });
@@ -42,7 +42,7 @@ function renderModal(line: string) {
         allTasks: [task],
     });
     const { container } = result;
-    addStepsMarkerSection(container);
+    addActionsSection(container);
 
     const description = container.querySelector('#description') as HTMLTextAreaElement;
     const button = container.querySelector('#steps') as HTMLButtonElement;
@@ -73,7 +73,7 @@ function withCursor(field: HTMLTextAreaElement) {
     return value.slice(0, selectionStart) + '|' + value.slice(selectionStart);
 }
 
-describe('StepsMarkerSection - placement', () => {
+describe('TaskModalActions - placement', () => {
     it('should come between Priority and the dates', () => {
         const { container } = renderModal('- [ ] Renew passport');
 
@@ -81,8 +81,8 @@ describe('StepsMarkerSection - placement', () => {
             'section.tasks-modal-description-section',
             'section.tasks-modal-priority-section',
             'hr#line-after-priority',
-            'section.tasks-modal-steps-section',
-            'hr#line-after-steps',
+            'section.tasks-modal-actions-section',
+            'hr#line-after-actions',
             'section.tasks-modal-dates-section',
         ]);
     });
@@ -93,8 +93,8 @@ describe('StepsMarkerSection - placement', () => {
 
         expect(formLayout(container)).toEqual([
             'section.tasks-modal-description-section',
-            'section.tasks-modal-steps-section',
-            'hr#line-after-steps',
+            'section.tasks-modal-actions-section',
+            'hr#line-after-actions',
             'section.tasks-modal-dates-section',
         ]);
     });
@@ -116,42 +116,46 @@ describe('StepsMarkerSection - placement', () => {
             'section.tasks-modal-description-section',
             'section.tasks-modal-priority-section',
             'hr#line-after-priority',
-            'section.tasks-modal-steps-section',
-            'hr#line-after-steps',
+            'section.tasks-modal-actions-section',
+            'hr#line-after-actions',
             'section.tasks-modal-dates-section',
         ]);
     });
 
     it('should do nothing outside the edit form', () => {
         const container = document.createElement('div');
-        addStepsMarkerSection(container);
+        addActionsSection(container);
         expect(container.innerHTML).toEqual('');
     });
 });
 
-describe('StepsMarkerSection - label and access key', () => {
-    it('should underline the access key P when access keys are on', () => {
-        updateSettings({ provideAccessKeys: true });
-        const { container, button } = renderModal('- [ ] Renew passport');
+describe('TaskModalActions - label and access key', () => {
+    it('should be labelled Actions, a label for no button', () => {
+        const { container } = renderModal('- [ ] Renew passport');
 
-        const label = container.querySelector('.tasks-modal-steps-section label') as HTMLLabelElement;
-        expect(label.innerHTML).toEqual('Ste<span class="accesskey">p</span>s');
-        expect(label.htmlFor).toEqual('steps');
+        const label = container.querySelector('.tasks-modal-actions-section label') as HTMLLabelElement;
+        expect(label.innerHTML).toEqual('Actions');
+        expect(label.htmlFor).toEqual('');
+    });
+
+    it('should give Insert 🪜 the access key P, shown after it, when access keys are on', () => {
+        updateSettings({ provideAccessKeys: true });
+        const { button } = renderModal('- [ ] Renew passport');
+
+        expect(button.innerHTML).toEqual('Insert 🪜 (<span class="accesskey">p</span>)');
         expect(button.accessKey).toEqual('p');
-        expect(button.textContent).toEqual('Insert 🪜');
     });
 
     it('should have no access key when access keys are off', () => {
         updateSettings({ provideAccessKeys: false });
-        const { container, button } = renderModal('- [ ] Renew passport');
+        const { button } = renderModal('- [ ] Renew passport');
 
-        const label = container.querySelector('.tasks-modal-steps-section label') as HTMLLabelElement;
-        expect(label.innerHTML).toEqual('Steps');
+        expect(button.innerHTML).toEqual('Insert 🪜');
         expect(button.hasAttribute('accesskey')).toEqual(false);
     });
 });
 
-describe('StepsMarkerSection - inserting the marker', () => {
+describe('TaskModalActions - inserting the marker', () => {
     it('should insert the marker at the end of the description, as the modal opens with the cursor there', async () => {
         const { description, button, apply } = renderModal('- [ ] Renew passport 📅 2026-10-30');
 

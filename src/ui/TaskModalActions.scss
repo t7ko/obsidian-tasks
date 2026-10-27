@@ -1,14 +1,16 @@
 // Fork feature: multi-step tasks. Spec: fork-features/multi-step-tasks.md
-// The edit modal's Steps section, laid out like the dates section below it.
+// The edit modal's Actions section, laid out like the dates section below it.
 
-.tasks-modal-steps-section {
+.tasks-modal-actions-section {
     display: grid;
     grid-template-columns: 6.0em auto;
     column-gap: .5em;
     align-items: center;
 
-    button {
-        justify-self: start;
+    .tasks-modal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5em;
     }
 
     button:disabled {
